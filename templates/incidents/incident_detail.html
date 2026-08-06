@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">{{ incident.incident_number }}</h3>
+    </div>
+
+    <div class="card-body">
+
+        <p>
+            <strong>Title:</strong>
+            {{ incident.title }}
+        </p>
+
+        <p>
+            <strong>Application:</strong>
+            {{ incident.application }}
+        </p>
+
+        <p>
+            <strong>Priority:</strong>
+            {{ incident.priority }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ incident.get_status_display }}
+        </p>
+
+        <p>
+            <strong>Assigned To:</strong>
+            {{ incident.assigned_to }}
+        </p>
+
+        <p>
+            <strong>Root Cause:</strong>
+            {{ incident.root_cause|default:"-" }}
+        </p>
+
+        <p>
+            <strong>Resolution:</strong>
+            {{ incident.resolution|default:"-" }}
+        </p>
+
+        <div class="mt-3">
+
+            <a
+                href="{% url 'update_incident' incident.id %}"
+                class="btn btn-warning">
+                Update
+            </a>
+
+            {% if request.user.role == 'ADMIN' %}
+
+                <a
+                    href="{% url 'delete_incident' incident.id %}"
+                    class="btn btn-danger">
+                    Delete
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<hr>
+
+<h4>Comments</h4>
+
+{% if comments %}
+
+    {% for comment in comments %}
+
+        <div class="card mb-2">
+
+            <div class="card-body">
+
+                <strong>{{ comment.user }}</strong>
+
+                <small class="text-muted">
+                    {{ comment.created_at|date:"d-M-Y H:i" }}
+                </small>
+
+                <hr>
+
+                <p class="mb-0">
+                    {{ comment.comment }}
+                </p>
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p class="text-muted">No comments available.</p>
+
+{% endif %}
+
+<hr>
+
+<h4>Add Comment</h4>
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button
+        type="submit"
+        class="btn btn-success">
+        Add Comment
+    </button>
+
+</form>
+
+<hr>
+
+<h4>History</h4>
+
+{% if history %}
+
+    <ul class="list-group">
+
+        {% for item in history %}
+
+            <li class="list-group-item">
+
+                <strong>{{ item.created_at|date:"d-M-Y H:i" }}</strong>
+                &nbsp;–&nbsp;
+                {{ item.action }}
+                &nbsp;–&nbsp;
+                {{ item.user }}
+
+            </li>
+
+        {% endfor %}
+
+    </ul>
+
+{% else %}
+
+    <p class="text-muted">No history available.</p>
+
+{% endif %}
+
+{% endblock %}

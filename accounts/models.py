@@ -3,15 +3,20 @@ from django.db import models
 
 class CustomUser(AbstractUser):
 
-    class Role(models.TextChoices):
-        ADMIN = "ADMIN", "Admin"
-        TEAM_LEAD = "TEAM_LEAD", "Team Lead"
-        SUPPORT = "SUPPORT", "Support Engineer"
+    ADMIN = 'ADMIN'
+    TEAM_LEAD = 'TEAM_LEAD'
+    SUPPORT = 'SUPPORT'
+
+    ROLE_CHOICES = [
+        (ADMIN, 'Admin'),
+        (TEAM_LEAD, 'Team Lead'),
+        (SUPPORT, 'Support Engineer'),
+    ]
 
     role = models.CharField(
         max_length=20,
-        choices=Role.choices,
-        default=Role.SUPPORT,
+        choices=ROLE_CHOICES,
+        default=SUPPORT
     )
 
     def __str__(self):

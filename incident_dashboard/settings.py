@@ -57,8 +57,8 @@ ROOT_URLCONF = 'incident_dashboard.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR/ 'templates'],
-        'APP_DIRS': True,
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -129,3 +129,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR/ 'media'
+
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'

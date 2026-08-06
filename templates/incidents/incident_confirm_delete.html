@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card shadow">
+
+    <div class="card-header bg-danger text-white">
+
+        <h4>Delete Incident</h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <h5>
+
+            Are you sure you want to delete
+
+            <strong>{{ incident.incident_number }}</strong>?
+
+        </h5>
+
+        <p>
+
+            <strong>Title:</strong>
+
+            {{ incident.title }}
+
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <button
+                class="btn btn-danger">
+
+                Yes, Delete
+
+            </button>
+
+            <a
+                href="{% url 'incident_detail' incident.id %}"
+                class="btn btn-secondary">
+
+                Cancel
+
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

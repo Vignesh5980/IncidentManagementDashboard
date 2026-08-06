@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="alert alert-danger mt-4">
+
+    <h3>Access Denied</h3>
+
+    <p>You don't have permission to perform this action.</p>
+
+    <a href="{% url 'incident_list' %}" class="btn btn-primary">
+    Back to Incidents
+    </a>
+
+</div>
+
+{% endblock %}
