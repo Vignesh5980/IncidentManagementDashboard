@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card shadow mb-4">
+
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+
+        <h3 class="mb-0">
+            Known Error Database (KEDB)
+        </h3>
+
+        <a href="{% url 'problem_list' %}" class="btn btn-light">
+            Back to Problems
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="card shadow">
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-primary">
+
+                    <tr>
+
+                        <th>KEDB ID</th>
+
+                        <th>Title</th>
+
+                        <th>Application</th>
+
+                        <th>Problem</th>
+
+                        <th>Status</th>
+
+                        <th>Created By</th>
+
+                        <th>Created On</th>
+
+                        <th width="180">Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for error in known_errors %}
+
+                    <tr>
+
+                        <td>
+
+                            {% if error.known_error_number %}
+                                {{ error.known_error_number }}
+                            {% else %}
+                                KEDB{{ error.id|stringformat:"06d" }}
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <strong>{{ error.title }}</strong>
+
+                        </td>
+
+                        <td>
+
+                            {{ error.application }}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'problem_detail' error.problem.id %}">
+                                {{ error.problem.problem_number }}
+                            </a>
+
+                        </td>
+
+                        <td>
+
+                            {% if error.status == "ACTIVE" %}
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+
+                            {% elif error.status == "RETIRED" %}
+                                <span class="badge bg-secondary">
+                                    Retired
+                                </span>
+
+                            {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    {{ error.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {{ error.created_by }}
+
+                        </td>
+
+                        <td>
+
+                            {{ error.created_at|date:"d M Y H:i" }}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'known_error_detail' error.id %}"
+                               class="btn btn-primary btn-sm">
+
+                                View
+
+                            </a>
+
+                            <a href="{% url 'update_known_error' error.id %}"
+                               class="btn btn-warning btn-sm">
+
+                                Edit
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="8" class="text-center text-muted">
+
+                            No Known Errors found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

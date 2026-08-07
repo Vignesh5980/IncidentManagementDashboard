@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-dark text-white">
+            <h3 class="mb-0">
+                RCA Dashboard
+            </h3>
+        </div>
+
+    </div>
+
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+
+
+        <!-- Total RCA -->
+        <div class="col-md-3">
+
+            <div class="card shadow bg-primary text-white">
+
+                <div class="card-body">
+
+                    <h6>Total RCA</h6>
+
+                    <h2>
+                        {{ total_rca }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Draft RCA -->
+        <div class="col-md-3">
+
+            <div class="card shadow bg-secondary text-white">
+
+                <div class="card-body">
+
+                    <h6>Draft RCA</h6>
+
+                    <h2>
+                        {{ draft_rca }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+        <!-- Pending RCA -->
+        <div class="col-md-3">
+
+            <div class="card shadow bg-warning">
+
+                <div class="card-body">
+
+                    <h6>
+                        Pending Approval
+                    </h6>
+
+                    <h2>
+                        {{ pending_rca }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+        <!-- Approved RCA -->
+        <div class="col-md-3">
+
+            <div class="card shadow bg-success text-white">
+
+                <div class="card-body">
+
+                    <h6>
+                        Approved RCA
+                    </h6>
+
+                    <h2>
+                        {{ approved_rca }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <!-- RCA Charts Section -->
+
+    <div class="row">
+
+
+        <!-- RCA Status Distribution -->
+
+        <div class="col-md-6">
+
+            <div class="card shadow mb-4">
+
+
+                <div class="card-header bg-primary text-white">
+
+                    RCA Status Distribution
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <canvas id="statusChart"></canvas>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <!-- RCA Application Analysis -->
+
+        <div class="col-md-6">
+
+            <div class="card shadow mb-4">
+
+
+                <div class="card-header bg-info text-white">
+
+                    RCA By Application
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <canvas id="applicationChart"></canvas>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <!-- Monthly RCA Trend -->
+
+    <div class="card shadow mb-4">
+
+
+        <div class="card-header bg-success text-white">
+
+            Monthly RCA Trend
+
+        </div>
+
+
+
+        <div class="card-body">
+
+            <canvas id="monthlyChart"></canvas>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+<!-- Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    // RCA Status Distribution Chart
+
+    const statusChart = new Chart(
+        document.getElementById('statusChart'),
+        {
+            type: 'pie',
+
+            data: {
+
+                labels: {{ status_labels|safe }},
+
+                datasets: [
+                    {
+                        data: {{ status_values|safe }}
+                    }
+                ]
+
+            }
+        }
+    );
+
+
+
+
+    // RCA Application Chart
+
+    const applicationChart = new Chart(
+        document.getElementById('applicationChart'),
+        {
+            type: 'bar',
+
+            data: {
+
+                labels: {{ application_labels|safe }},
+
+                datasets: [
+                    {
+                        label: 'RCA Count',
+
+                        data: {{ application_values|safe }}
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true
+
+            }
+        }
+    );
+
+
+
+
+
+    // Monthly RCA Trend Chart
+
+    const monthlyChart = new Chart(
+        document.getElementById('monthlyChart'),
+        {
+            type: 'line',
+
+            data: {
+
+                labels: {{ monthly_labels|safe }},
+
+                datasets: [
+                    {
+
+                        label: 'RCA Created',
+
+                        data: {{ monthly_values|safe }},
+
+                        fill: false,
+
+                        tension: 0.3
+
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true
+
+            }
+        }
+    );
+
+
+</script>
+
+{% endblock %}

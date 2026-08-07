@@ -52,36 +52,66 @@
 <body>
 
     <!-- Navbar -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
         <div class="container">
 
             <a class="navbar-brand" href="/dashboard/">
                 Incident Management Dashboard
             </a>
 
-            <div class="ms-auto">
 
-                <a
-                    href="/incidents/"
-                    class="btn btn-outline-light me-2">
+            <div class="ms-auto d-flex align-items-center">
+
+
+                <a href="/incidents/"
+                class="btn btn-outline-light me-2">
                     Incidents
                 </a>
 
-                <a
-                    href="/incidents/create/"
-                    class="btn btn-success me-2">
+
+                <a href="/problems/"
+                class="btn btn-outline-warning me-2">
+                    Problems
+                </a>
+
+
+                <!-- KEDB Search -->
+
+                <form method="GET"
+                    action="{% url 'search_kedb' %}"
+                    class="d-flex me-2">
+
+                    <input 
+                        type="text"
+                        name="q"
+                        class="form-control"
+                        placeholder="Search Known Errors">
+
+                    <button class="btn btn-primary ms-2">
+                        Search
+                    </button>
+
+                </form>
+
+
+                <a href="/incidents/create/"
+                class="btn btn-success me-2">
                     New Incident
                 </a>
 
-                <a
-                    href="{% url 'logout' %}"
-                    class="btn btn-danger">
+
+                <a href="{% url 'logout' %}"
+                class="btn btn-danger">
                     Logout
                 </a>
+
 
             </div>
 
         </div>
+
     </nav>
 
     <!-- Messages -->

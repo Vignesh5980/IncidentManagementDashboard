@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'accounts',
     'incidents',
     'dashboard',
+    'problems',
 ]
 
 MIDDLEWARE = [

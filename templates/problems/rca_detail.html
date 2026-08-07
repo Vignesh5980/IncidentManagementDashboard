@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- RCA Header -->
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3 class="mb-0">
+                Root Cause Analysis -
+                {{ rca.problem.problem_number }}
+            </h3>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <strong>Problem Number</strong><br>
+                    {{ rca.problem.problem_number }}
+                </div>
+
+
+                <div class="col-md-4">
+                    <strong>Problem Title</strong><br>
+                    {{ rca.problem.title }}
+                </div>
+
+
+                <div class="col-md-4">
+                    <strong>Application</strong><br>
+                    {{ rca.problem.application }}
+                </div>
+
+            </div>
+
+
+            <hr>
+
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <strong>RCA Status</strong><br>
+
+                    {% if rca.status == "APPROVED" %}
+
+                    <span class="badge bg-success">
+                        {{ rca.get_status_display }}
+                    </span>
+
+                    {% elif rca.status == "PENDING" %}
+
+                    <span class="badge bg-warning">
+                        {{ rca.get_status_display }}
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-secondary">
+                        {{ rca.get_status_display }}
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <strong>Created By</strong><br>
+
+                    {{ rca.created_by }}
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <strong>Created Date</strong><br>
+
+                    {{ rca.created_at|date:"d M Y H:i" }}
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- RCA Summary -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-info text-white">
+
+            <h5 class="mb-0">
+                RCA Summary
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <strong>Summary</strong>
+
+            <p>
+                {{ rca.summary|linebreaks }}
+            </p>
+
+
+            <strong>Root Cause</strong>
+
+            <p>
+                {{ rca.root_cause|linebreaks }}
+            </p>
+
+
+            <strong>Impact Analysis</strong>
+
+            <p>
+                {{ rca.impact|linebreaks }}
+            </p>
+
+
+        </div>
+
+    </div>
+
+
+
+
+    <!-- 5 Whys -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-warning">
+
+            <h5 class="mb-0">
+                5 Whys Analysis
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <table class="table table-bordered">
+
+
+                <tr>
+
+                    <th width="15%">
+                        Why 1
+                    </th>
+
+                    <td>
+                        {{ rca.why1|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Why 2
+                    </th>
+
+                    <td>
+                        {{ rca.why2|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Why 3
+                    </th>
+
+                    <td>
+                        {{ rca.why3|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Why 4
+                    </th>
+
+                    <td>
+                        {{ rca.why4|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+                        Why 5
+                    </th>
+
+                    <td>
+                        {{ rca.why5|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+            </table>
+
+
+        </div>
+
+    </div>
+
+
+
+
+    <!-- Fishbone Analysis -->
+
+
+    <div class="card shadow mb-4">
+
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Fishbone (Ishikawa) Analysis
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <table class="table table-bordered">
+
+
+                <tr>
+
+                    <th>
+                        People
+                    </th>
+
+                    <td>
+                        {{ rca.people|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+
+                <tr>
+
+                    <th>
+                        Process
+                    </th>
+
+                    <td>
+                        {{ rca.process|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+
+                <tr>
+
+                    <th>
+                        Technology
+                    </th>
+
+                    <td>
+                        {{ rca.technology|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+
+                <tr>
+
+                    <th>
+                        Environment
+                    </th>
+
+                    <td>
+                        {{ rca.environment|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+
+                <tr>
+
+                    <th>
+                        Measurement
+                    </th>
+
+                    <td>
+                        {{ rca.measurement|linebreaks }}
+                    </td>
+
+                </tr>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    <!-- CAPA -->
+
+
+    <div class="card shadow mb-4">
+
+
+        <div class="card-header bg-success text-white">
+
+            <h5 class="mb-0">
+                Corrective & Preventive Actions
+            </h5>
+
+        </div>
+
+
+
+        <div class="card-body">
+
+
+            <h6>
+                Corrective Action
+            </h6>
+
+            <p>
+                {{ rca.corrective_action|linebreaks }}
+            </p>
+
+
+
+            <hr>
+
+
+
+            <h6>
+                Preventive Action
+            </h6>
+
+            <p>
+                {{ rca.preventive_action|linebreaks }}
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    <!-- Buttons -->
+
+
+    <div class="mb-4">
+
+
+        <a
+        href="{% url 'problem_detail' rca.problem.id %}"
+        class="btn btn-secondary">
+
+            Back to Problem
+
+        </a>
+
+
+
+        <a
+        href="{% url 'update_rca' rca.problem.id %}"
+        class="btn btn-warning">
+
+            Edit RCA
+
+        </a>
+
+
+    </div>
+
+
+
+</div>
+
+
+{% endblock %}

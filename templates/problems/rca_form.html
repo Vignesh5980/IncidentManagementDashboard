@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">
+                Root Cause Analysis (RCA)
+            </h3>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <!-- RCA Summary -->
+                <div class="card mb-4">
+
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">RCA Summary</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Summary
+                            </label>
+                            {{ form.summary }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Root Cause
+                            </label>
+                            {{ form.root_cause }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Impact Analysis
+                            </label>
+                            {{ form.impact }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- 5 Whys -->
+                <div class="card mb-4">
+
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">
+                            5 Whys Analysis
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label>Why 1</label>
+                            {{ form.why1 }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Why 2</label>
+                            {{ form.why2 }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Why 3</label>
+                            {{ form.why3 }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Why 4</label>
+                            {{ form.why4 }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Why 5</label>
+                            {{ form.why5 }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Fishbone -->
+                <div class="card mb-4">
+
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            Fishbone Analysis
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label>People</label>
+                            {{ form.people }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Process</label>
+                            {{ form.process }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Technology</label>
+                            {{ form.technology }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Environment</label>
+                            {{ form.environment }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Measurement</label>
+                            {{ form.measurement }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- CAPA -->
+                <div class="card mb-4">
+
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            Corrective & Preventive Actions
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label>
+                                Corrective Action
+                            </label>
+
+                            {{ form.corrective_action }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label>
+                                Preventive Action
+                            </label>
+
+                            {{ form.preventive_action }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Approval -->
+                <div class="card mb-4">
+
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">
+                            Approval Status
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="mb-3">
+
+                            <label>Status</label>
+
+                            {{ form.status }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Buttons -->
+                <div class="text-end">
+
+                    <a
+                        href="{% url 'problem_list' %}"
+                        class="btn btn-secondary">
+
+                        Cancel
+
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success">
+
+                        Save RCA
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

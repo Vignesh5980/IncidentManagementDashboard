@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="card shadow mb-4">
+
+    <div class="card-header bg-dark text-white">
+
+        <h3 class="mb-0">
+
+            Known Error Details
+
+        </h3>
+
+    </div>
+
+</div>
+
+
+<!-- Known Error Information -->
+<div class="card shadow mb-4">
+
+    <div class="card-header bg-primary text-white">
+
+        <h4 class="mb-0">
+
+            {{ known_error.title }}
+
+        </h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <strong>Known Error ID</strong><br>
+
+                {% if known_error.known_error_number %}
+                    {{ known_error.known_error_number }}
+                {% else %}
+                    KEDB{{ known_error.id|stringformat:"06d" }}
+                {% endif %}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <strong>Status</strong><br>
+
+                {% if known_error.status == "ACTIVE" %}
+                    <span class="badge bg-success">
+                        Active
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary">
+                        {{ known_error.status }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <strong>Application</strong><br>
+
+                {{ known_error.application }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <strong>Problem Record</strong><br>
+
+                <a href="{% url 'problem_detail' known_error.problem.id %}">
+
+                    {{ known_error.problem.problem_number }}
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <strong>Symptoms</strong>
+
+            <div class="border rounded p-3 mt-2">
+
+                {{ known_error.symptoms|linebreaks }}
+
+            </div>
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <strong>Root Cause</strong>
+
+            <div class="border rounded p-3 mt-2">
+
+                {{ known_error.root_cause|linebreaks }}
+
+            </div>
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <strong>Workaround</strong>
+
+            <div class="border rounded p-3 mt-2">
+
+                {{ known_error.workaround|linebreaks }}
+
+            </div>
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <strong>Permanent Fix</strong>
+
+            <div class="border rounded p-3 mt-2">
+
+                {{ known_error.permanent_fix|linebreaks }}
+
+            </div>
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <strong>Keywords</strong><br>
+
+            {{ known_error.keywords }}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Linked Incidents -->
+<div class="card shadow mb-4">
+
+    <div class="card-header bg-info text-white">
+
+        <h5 class="mb-0">
+
+            Linked Incidents
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if known_error.incidents.all %}
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>Incident Number</th>
+
+                        <th>Title</th>
+
+                        <th>Status</th>
+
+                        <th>Priority</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for incident in known_error.incidents.all %}
+
+                    <tr>
+
+                        <td>{{ incident.incident_number }}</td>
+
+                        <td>{{ incident.title }}</td>
+
+                        <td>{{ incident.get_status_display }}</td>
+
+                        <td>{{ incident.priority }}</td>
+
+                        <td>
+
+                            <a href="{% url 'incident_detail' incident.id %}"
+                               class="btn btn-primary btn-sm">
+
+                                View
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="5" class="text-center">
+
+                            No linked incidents.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- Audit Information -->
+<div class="card shadow mb-4">
+
+    <div class="card-header bg-secondary text-white">
+
+        <h5 class="mb-0">
+
+            Audit Information
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-6">
+
+                <strong>Created By</strong><br>
+
+                {{ known_error.created_by }}
+
+            </div>
+
+            <div class="col-md-6">
+
+                <strong>Created On</strong><br>
+
+                {{ known_error.created_at|date:"d M Y H:i" }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Action Buttons -->
+<div class="mt-4">
+
+    <a href="{% url 'known_error_list' %}"
+       class="btn btn-secondary">
+
+        Back
+
+    </a>
+
+    <a href="{% url 'update_known_error' known_error.id %}"
+       class="btn btn-warning">
+
+        Edit
+
+    </a>
+
+    <a href="{% url 'delete_known_error' known_error.id %}"
+       class="btn btn-danger">
+
+        Delete
+
+    </a>
+
+</div>
+
+{% endblock %}

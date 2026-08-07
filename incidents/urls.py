@@ -36,10 +36,4 @@ urlpatterns = [
         views.export_incidents_csv,
         name="export_incidents_csv",
     ),
-    path(
-        "dashboard/",
-        views.dashboard,
-        name="dashboard",
-    ),
-
 ]
