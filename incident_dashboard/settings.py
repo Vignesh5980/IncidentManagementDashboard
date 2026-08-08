@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     'incidents',
     'dashboard',
     'problems',
+    'changes',
+    "service_requests",
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -134,3 +137,4 @@ MEDIA_ROOT = BASE_DIR/ 'media'
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+

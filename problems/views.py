@@ -243,8 +243,6 @@ def create_problem(request):
 
             problem.save()
 
-            form.save_m2m()
-
             messages.success(
                 request,
                 "Problem created successfully."
@@ -283,7 +281,6 @@ def update_problem(request, pk):
         if form.is_valid():
 
             form.save()
-            form.save_m2m()
             messages.success(
                 request,
                 "Problem updated successfully."

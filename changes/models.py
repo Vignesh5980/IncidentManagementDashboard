@@ -70,9 +70,15 @@ class Change(models.Model):
         related_name="assigned_changes",
     )
 
-    scheduled_start = models.DateTimeField()
+    scheduled_start = models.DateTimeField(
+        null=True, 
+        blank=True
+    )
 
-    scheduled_end = models.DateTimeField()
+    scheduled_end = models.DateTimeField(
+        null=True, 
+            blank=True
+    )
 
     implementation_plan = models.TextField()
 
@@ -106,3 +112,32 @@ class Change(models.Model):
 
     def __str__(self):
         return self.change_number
+
+class PIR(models.Model):
+
+    change = models.OneToOneField(
+        Change,
+        on_delete=models.CASCADE,
+        related_name="pir"
+    )
+
+    successful = models.BooleanField()
+
+    observations = models.TextField()
+
+    lessons = models.TextField()
+
+    recommendations = models.TextField()
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f"PIR - {self.change.change_number}"

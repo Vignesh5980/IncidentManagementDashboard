@@ -1,149 +1,584 @@
+{% load static %}
+
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Incident Dashboard</title>
+<meta charset="UTF-8">
 
-    <!-- Bootstrap CSS -->
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <!-- DataTables -->
-    <link rel="stylesheet"
-    href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+<title>
+    {% block title %}
+        Incident Management Dashboard
+    {% endblock %}
+</title>
 
-    <link rel="stylesheet"
-    href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 
-    <link rel="stylesheet"
-    href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
-        
+<!-- Bootstrap CSS -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
+
+
+<!-- Bootstrap Icons -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    rel="stylesheet"
+>
+
+
+<!-- DataTables CSS -->
+<link
+    rel="stylesheet"
+    href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css"
+>
+
+
+<style>
+
+    body {
+        background-color: #f5f7fb;
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+    }
+
+
+    /* =========================================
+       SIDEBAR
+    ========================================= */
+
+    .sidebar {
+        min-height: 100vh;
+        background: #212529;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+
+    .sidebar-brand {
+        padding: 20px;
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 700;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+
+    .sidebar-menu {
+        padding: 15px 10px;
+    }
+
+
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 15px;
+        margin-bottom: 5px;
+        color: #adb5bd;
+        text-decoration: none;
+        border-radius: 7px;
+        transition: 0.2s;
+    }
+
+
+    .sidebar-menu a:hover {
+        background: #343a40;
+        color: #ffffff;
+    }
+
+
+    .sidebar-menu a.active {
+        background: #0d6efd;
+        color: #ffffff;
+    }
+
+
+    .sidebar-menu i {
+        font-size: 18px;
+        width: 22px;
+    }
+
+
+    .menu-heading {
+        color: #6c757d;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 15px 15px 8px;
+    }
+
+
+    /* =========================================
+       MAIN CONTENT
+    ========================================= */
+
+    .main-content {
+        margin-left: 250px;
+        min-height: 100vh;
+    }
+
+
+    .page-content {
+        padding: 25px;
+    }
+
+
+    /* =========================================
+       TOP NAVBAR
+    ========================================= */
+
+    .top-navbar {
+        background: #ffffff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 12px 25px;
+        min-height: 65px;
+    }
+
+
+    /* =========================================
+       PUBLIC / LOGIN PAGE
+    ========================================= */
+
+    .public-page {
+        min-height: 100vh;
+        background: #f5f7fb;
+    }
+
+
+    /* =========================================
+       TABLE
+    ========================================= */
+
+    .table th {
+        white-space: nowrap;
+        font-weight: 600;
+    }
+
+
+    .table td {
+        vertical-align: middle;
+    }
+
+
+    /* =========================================
+       MOBILE
+    ========================================= */
+
+    @media (max-width: 768px) {
+
+        .sidebar {
+            width: 0;
+            overflow: hidden;
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .page-content {
+            padding: 15px;
+        }
+
+    }
+
+</style>
+
+
+{% block extra_css %}
+{% endblock %}
+
 </head>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-
-<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
-
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body>
 
-    <!-- Navbar -->
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+{% if request.user.is_authenticated %}
 
-        <div class="container">
+<!-- =================================================
+     AUTHENTICATED USER LAYOUT
+================================================= -->
 
-            <a class="navbar-brand" href="/dashboard/">
-                Incident Management Dashboard
+<div class="sidebar">
+
+```
+<!-- Brand -->
+
+<div class="sidebar-brand">
+
+    <i class="bi bi-shield-check"></i>
+
+    ITSM Dashboard
+
+</div>
+
+
+<!-- Menu -->
+
+<div class="sidebar-menu">
+
+
+    <!-- Overview -->
+
+    <div class="menu-heading">
+        Overview
+    </div>
+
+
+    <a
+        href="{% url 'dashboard' %}"
+        class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+    >
+
+        <i class="bi bi-speedometer2"></i>
+
+        <span>
+            Dashboard
+        </span>
+
+    </a>
+
+
+    <!-- Service Management -->
+
+    <div class="menu-heading">
+        Service Management
+    </div>
+
+
+    <!-- Incidents -->
+
+    <a
+        href="{% url 'incident_list' %}"
+        class="{% if 'incident' in request.resolver_match.url_name %}active{% endif %}"
+    >
+
+        <i class="bi bi-exclamation-triangle"></i>
+
+        <span>
+            Incidents
+        </span>
+
+    </a>
+
+
+    <!-- Problems -->
+
+    <a
+        href="{% url 'problem_list' %}"
+        class="{% if 'problem' in request.resolver_match.url_name %}active{% endif %}"
+    >
+
+        <i class="bi bi-bug"></i>
+
+        <span>
+            Problems
+        </span>
+
+    </a>
+
+    <!-- Service Requests -->
+    <li class="nav-item">
+
+        <a
+            class="nav-link {% if request.resolver_match.url_name == 'service_request_list' %}active{% endif %}"
+            href="{% url 'service_request_list' %}"
+        >
+
+            <i class="bi bi-ticket-perforated me-2"></i>
+
+            Service Requests
+
+        </a>
+
+    </li>
+
+    <!-- Changes -->
+
+    <a
+        href="{% url 'change_list' %}"
+        class="{% if 'change' in request.resolver_match.url_name %}active{% endif %}"
+    >
+
+        <i class="bi bi-arrow-repeat"></i>
+
+        <span>
+            Changes
+        </span>
+
+    </a>
+
+        <!-- KEDB -->
+
+    <a
+        href="{% url 'kedb_list' %}"
+        class="{% if 'kedb' in request.resolver_match.url_name %}active{% endif %}"
+    >
+
+        <i class="bi bi-database-check"></i>
+
+        <span>
+            KEDB
+        </span>
+
+    </a>
+
+
+
+    <!-- Reports -->
+
+    <div class="menu-heading">
+        Reports
+    </div>
+
+
+    <a href="#">
+
+        <i class="bi bi-bar-chart"></i>
+
+        <span>
+            Reports
+        </span>
+
+    </a>
+
+
+    <a href="#">
+
+        <i class="bi bi-calendar3"></i>
+
+        <span>
+            Change Calendar
+        </span>
+
+    </a>
+
+
+    <!-- Administration -->
+
+    <div class="menu-heading">
+        Administration
+    </div>
+
+
+    <a href="#">
+
+        <i class="bi bi-people"></i>
+
+        <span>
+            Users
+        </span>
+
+    </a>
+
+
+    <a href="#">
+
+        <i class="bi bi-gear"></i>
+
+        <span>
+            Settings
+        </span>
+
+    </a>
+
+
+</div>
+
+</div>
+
+<!-- =================================================
+     MAIN CONTENT
+================================================= -->
+
+<div class="main-content">
+
+<!-- Top Navbar -->
+
+<nav class="top-navbar">
+
+    <div class="d-flex justify-content-between align-items-center">
+
+
+        <div>
+
+            <button
+                class="btn btn-outline-secondary d-md-none"
+                type="button"
+                onclick="toggleSidebar()"
+            >
+
+                <i class="bi bi-list"></i>
+
+            </button>
+
+        </div>
+
+
+        <div class="d-flex align-items-center gap-3">
+
+
+            <span class="text-muted">
+
+                <i class="bi bi-person-circle"></i>
+
+                {{ request.user.get_full_name|default:request.user.username }}
+
+            </span>
+
+
+            <a
+                href="{% url 'logout' %}"
+                class="btn btn-outline-danger btn-sm"
+            >
+
+                <i class="bi bi-box-arrow-right"></i>
+
+                Logout
+
             </a>
 
-
-            <div class="ms-auto d-flex align-items-center">
-
-
-                <a href="/incidents/"
-                class="btn btn-outline-light me-2">
-                    Incidents
-                </a>
-
-
-                <a href="/problems/"
-                class="btn btn-outline-warning me-2">
-                    Problems
-                </a>
-
-
-                <!-- KEDB Search -->
-
-                <form method="GET"
-                    action="{% url 'search_kedb' %}"
-                    class="d-flex me-2">
-
-                    <input 
-                        type="text"
-                        name="q"
-                        class="form-control"
-                        placeholder="Search Known Errors">
-
-                    <button class="btn btn-primary ms-2">
-                        Search
-                    </button>
-
-                </form>
-
-
-                <a href="/incidents/create/"
-                class="btn btn-success me-2">
-                    New Incident
-                </a>
-
-
-                <a href="{% url 'logout' %}"
-                class="btn btn-danger">
-                    Logout
-                </a>
-
-
-            </div>
-
         </div>
-
-    </nav>
-
-    <!-- Messages -->
-    {% if messages %}
-        <div class="container mt-3">
-            {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-
-                    {{ message }}
-
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"
-                        aria-label="Close">
-                    </button>
-
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <!-- Main Content -->
-    <div class="container mt-4">
-
-        {% block content %}
-        {% endblock %}
 
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</nav>
+
+
+<!-- Authenticated Content -->
+
+<main class="page-content">
+
+
+{% else %}
+
+<!-- =================================================
+     LOGGED OUT / PUBLIC LAYOUT
+================================================= -->
+
+<div class="public-page">
+
+<!-- Messages -->
+
+{% if messages %}
+
+    <div class="container pt-3">
+
+        {% for message in messages %}
+
+            <div
+                class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show"
+                role="alert"
+            >
+
+                {{ message }}
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+{% endif %}
+
+<!-- =================================================
+     SINGLE CONTENT BLOCK
+================================================= -->
+
+{% block content %}
+{% endblock %}
+
+<!-- =================================================
+     CLOSE LAYOUT
+================================================= -->
+
+{% if request.user.is_authenticated %}
+
+
+</main>
+
+
+</div>
+
+{% else %}
+
+</div>
+
+{% endif %}
+
+<!-- =================================================
+     JAVASCRIPT
+================================================= -->
+
+<!-- jQuery -->
+
+<script
+    src="https://code.jquery.com/jquery-3.7.1.min.js"
+></script>
+
+<!-- Bootstrap -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+<!-- DataTables -->
+
+<script
+    src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"
+></script>
+
+<script
+    src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"
+></script>
+
+<script>
+
+function toggleSidebar() {
+
+    const sidebar = document.querySelector(".sidebar");
+
+    if (!sidebar) {
+        return;
+    }
+
+
+    if (sidebar.style.width === "250px") {
+
+        sidebar.style.width = "0";
+
+    } else {
+
+        sidebar.style.width = "250px";
+
+    }
+
+}
+
+</script>
+
+{% block extra_js %}
+{% endblock %}
 
 </body>
+
 </html>

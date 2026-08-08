@@ -37,7 +37,7 @@
             <div class="card-body">
                 <h6 class="text-muted">Normal Changes</h6>
                 <h3 class="fw-bold">
-                    {{ normal_changes }}
+                    {{ normal_count|default:"0" }}
                 </h3>
             </div>
         </div>
@@ -48,7 +48,7 @@
             <div class="card-body">
                 <h6 class="text-muted">Emergency Changes</h6>
                 <h3 class="fw-bold">
-                    {{ emergency_changes|default:"0" }}
+                    {{ emergency_count|default:"0" }}
                 </h3>
             </div>
         </div>
@@ -59,7 +59,7 @@
             <div class="card-body">
                 <h6 class="text-muted">Standard Changes</h6>
                 <h3 class="fw-bold">
-                    {{ standard_changes|default:"0" }}
+                    {{ standard_count|default:"0" }}
                 </h3>
             </div>
         </div>

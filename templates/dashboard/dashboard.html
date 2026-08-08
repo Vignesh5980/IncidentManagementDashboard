@@ -1,268 +1,621 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
 
 {% block content %}
 
 <div class="container-fluid">
 
-    <!-- Summary Cards -->
-    <div class="row">
+```
+<!-- =====================================================
+     DASHBOARD HEADER
+====================================================== -->
 
-        <div class="col-md-3">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-            <div class="card bg-primary text-white shadow">
+    <div>
 
-                <div class="card-body">
+        <h3 class="fw-bold mb-1">
+            Dashboard
+        </h3>
 
-                    <h5>Open</h5>
-
-                    <h2>{{ open_count }}</h2>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card bg-success text-white shadow">
-
-                <div class="card-body">
-
-                    <h5>Resolved</h5>
-
-                    <h2>{{ resolved_count }}</h2>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card bg-danger text-white shadow">
-
-                <div class="card-body">
-
-                    <h5>P1</h5>
-
-                    <h2>{{ p1_count }}</h2>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card bg-warning shadow">
-
-                <div class="card-body">
-
-                    <h5>SLA Breached</h5>
-
-                    <h2>{{ sla_breached }}</h2>
-
-                </div>
-
-            </div>
-
-        </div>
+        <p class="text-muted mb-0">
+            Incident Management Overview
+        </p>
 
     </div>
 
-    <hr>
+    <div>
 
-    <!-- Charts -->
-    <div class="row">
+        <span class="text-muted">
+            Welcome,
+        </span>
 
-        <div class="col-md-8">
-
-            <div class="card shadow">
-
-                <div class="card-body">
-
-                    <canvas id="monthlyChart"></canvas>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-4">
-
-            <div class="card shadow">
-
-                <div class="card-body">
-
-                    <canvas id="priorityChart"></canvas>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <hr>
-
-    <!-- Engineer Workload -->
-    <div class="row">
-
-        <div class="col-md-12">
-
-            <div class="card shadow">
-
-                <div class="card-body">
-
-                    <canvas id="engineerChart"></canvas>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <hr>
-<hr>
-<hr>
-
-<div class="row">
-
-    <!-- SLA Breach Trend -->
-    <div class="col-md-6">
-
-        <div class="card shadow">
-
-            <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">SLA Breach Trend</h5>
-            </div>
-
-            <div class="card-body">
-
-                <canvas id="slaChart"></canvas>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Average Resolution Time -->
-    <div class="col-md-6">
-
-        <div class="card shadow">
-
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0">Average Resolution Time</h5>
-            </div>
-
-            <div class="card-body">
-
-                <canvas id="resolutionChart"></canvas>
-
-            </div>
-
-        </div>
+        <strong>
+            {{ request.user.get_full_name|default:request.user.username }}
+        </strong>
 
     </div>
 
 </div>
 
-<hr>
-<!-- Latest Incidents -->
-<div class="card shadow mb-4">
 
-    <div class="card-header bg-dark text-white">
-        <h5 class="mb-0">Latest Incidents</h5>
+
+<!-- =====================================================
+     INCIDENT SUMMARY
+====================================================== -->
+
+<h5 class="fw-bold mb-3">
+    Incident Management
+</h5>
+
+
+<div class="row g-3 mb-4">
+
+
+    <!-- Total Incidents -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Total Incidents
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ total_incidents|default:0 }}
+                        </h3>
+
+                    </div>
+
+                    <div class="fs-1 text-primary">
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+
+
+    <!-- Open Incidents -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Open
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ open_incidents|default:0 }}
+                        </h3>
+
+                    </div>
+
+                    <div class="fs-1 text-danger">
+
+                        <i class="bi bi-folder2-open"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- In Progress -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            In Progress
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ in_progress_incidents|default:0 }}
+                        </h3>
+
+                    </div>
+
+                    <div class="fs-1 text-warning">
+
+                        <i class="bi bi-arrow-repeat"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Resolved -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Resolved
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ resolved_incidents|default:0 }}
+                        </h3>
+
+                    </div>
+
+                    <div class="fs-1 text-success">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     SERVICE REQUEST SUMMARY
+====================================================== -->
+
+<h5 class="fw-bold mb-3">
+    Service Requests
+</h5>
+
+
+<div class="row g-3 mb-4">
+
+
+    <!-- Total -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Total Requests
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ total_service_requests|default:0 }}
+                        </h3>
+
+                    </div>
+
+                    <div class="fs-1 text-primary">
+
+                        <i class="bi bi-ticket-perforated"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- In Progress -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            In Progress
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ in_progress_service_requests|default:0 }}
+                        </h3>
+
+                    </div>
+
+                    <div class="fs-1 text-warning">
+
+                        <i class="bi bi-arrow-repeat"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Closed -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Closed
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ closed_service_requests|default:0 }}
+                        </h3>
+
+                    </div>
+
+                    <div class="fs-1 text-success">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Rejected -->
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Rejected
+                        </p>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ rejected_service_requests|default:0 }}
+                        </h3>
+
+                    </div>
+
+                    <div class="fs-1 text-danger">
+
+                        <i class="bi bi-x-circle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     PROBLEM / CHANGE / KEDB
+====================================================== -->
+
+<h5 class="fw-bold mb-3">
+    ITSM Overview
+</h5>
+
+
+<div class="row g-3 mb-4">
+
+
+    <!-- Problems -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Problems
+                        </p>
+
+                        <h3 class="fw-bold">
+                            {{ total_problems|default:0 }}
+                        </h3>
+
+                        <a
+                            href="{% url 'problem_list' %}"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+
+                            View Problems
+
+                        </a>
+
+                    </div>
+
+                    <div class="fs-1 text-warning">
+
+                        <i class="bi bi-bug"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Changes -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Changes
+                        </p>
+
+                        <h3 class="fw-bold">
+                            {{ total_changes|default:0 }}
+                        </h3>
+
+                        <a
+                            href="{% url 'change_list' %}"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+
+                            View Changes
+
+                        </a>
+
+                    </div>
+
+                    <div class="fs-1 text-info">
+
+                        <i class="bi bi-arrow-left-right"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- KEDB -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <p class="text-muted mb-1">
+                            Known Errors
+                        </p>
+
+                        <h3 class="fw-bold">
+                            {{ total_kedb|default:0 }}
+                        </h3>
+
+                        <a
+                            href="{% url 'kedb_list' %}"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+
+                            View KEDB
+
+                        </a>
+
+                    </div>
+
+                    <div class="fs-1 text-secondary">
+
+                        <i class="bi bi-database-check"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     QUICK ACTIONS
+====================================================== -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-white">
+
+        <h5 class="fw-bold mb-0">
+            Quick Actions
+        </h5>
+
+    </div>
+
 
     <div class="card-body">
 
-        <table class="table table-striped table-hover">
+        <div class="row g-3">
 
-            <thead>
 
-                <tr>
-                    <th>Incident</th>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Engineer</th>
-                </tr>
+            <div class="col-md-3">
 
-            </thead>
+                <a
+                    href="{% url 'create_incident' %}"
+                    class="btn btn-outline-danger w-100"
+                >
 
-            <tbody>
+                    <i class="bi bi-plus-circle me-1"></i>
 
-                {% for incident in latest_incidents %}
+                    Create Incident
 
-                <tr>
-
-                    <td>{{ incident.incident_number }}</td>
-
-                    <td>{{ incident.title }}</td>
-
-                    <td>{{ incident.get_status_display }}</td>
-
-                    <td>{{ incident.priority }}</td>
-
-                    <td>{{ incident.assigned_to|default:"-" }}</td>
-
-                </tr>
-
-                {% empty %}
-
-                <tr>
-
-                    <td colspan="5" class="text-center">
-                        No incidents found.
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-<!-- Average Resolution Time -->
-<div class="row mb-4">
-
-    <div class="col-md-4">
-
-        <div class="card bg-info text-white shadow">
-
-            <div class="card-body">
-
-                <h5>Average Resolution Time</h5>
-
-                <h3>
-
-                    {% if avg_resolution %}
-
-                        {{ avg_resolution }}
-
-                    {% else %}
-
-                        N/A
-
-                    {% endif %}
-
-                </h3>
+                </a>
 
             </div>
+
+
+            <div class="col-md-3">
+
+                <a
+                    href="{% url 'create_service_request' %}"
+                    class="btn btn-outline-primary w-100"
+                >
+
+                    <i class="bi bi-ticket-perforated me-1"></i>
+
+                    Create Service Request
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <a
+                    href="{% url 'change_create' %}"
+                    class="btn btn-outline-info w-100"
+                >
+
+                    <i class="bi bi-arrow-left-right me-1"></i>
+
+                    Create Change
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <a
+                    href="{% url 'kedb_create' %}"
+                    class="btn btn-outline-secondary w-100"
+                >
+
+                    <i class="bi bi-database-add me-1"></i>
+
+                    Add Known Error
+
+                </a>
+
+            </div>
+
 
         </div>
 
@@ -270,257 +623,130 @@
 
 </div>
 
-<!-- User Information -->
-<div class="card shadow">
 
-    <div class="card-body">
 
-        <h2>Welcome {{ request.user.username }}</h2>
+<!-- =====================================================
+     RECENT INCIDENTS
+====================================================== -->
 
-        <h5>Role: {{ request.user.role }}</h5>
+<div class="card shadow-sm border-0 mb-4">
 
-        <a href="{% url 'logout' %}" class="btn btn-danger">
-            Logout
-        </a>
+    <div class="card-header bg-white">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <h5 class="fw-bold mb-0">
+                Recent Incidents
+            </h5>
+
+            <a
+                href="{% url 'incident_list' %}"
+                class="btn btn-sm btn-outline-primary"
+            >
+
+                View All
+
+            </a>
+
+        </div>
 
     </div>
 
-</div>
-<!-- Monthly Incident Trend -->
-<script>
 
-const monthlyCtx = document.getElementById("monthlyChart");
+    <div class="card-body p-0">
 
-new Chart(monthlyCtx, {
-    type: "line",
-    data: {
-        labels: [
-            {% for row in monthly_data %}
-                "{{ row.month|date:'M Y' }}",
-            {% endfor %}
-        ],
-        datasets: [{
-            label: "Incidents",
-            data: [
-                {% for row in monthly_data %}
-                    {{ row.total }},
-                {% endfor %}
-            ],
-            borderWidth: 2,
-            fill: false,
-            tension: 0.3
-        }]
-    }
-});
 
-const priorityCtx = document.getElementById("priorityChart");
+        {% if recent_incidents %}
 
-new Chart(priorityCtx, {
-    type: "pie",
-    data: {
-        labels: [
-            {% for row in priority_data %}
-                "{{ row.priority }}",
-            {% endfor %}
-        ],
-        datasets: [{
-            data: [
-                {% for row in priority_data %}
-                    {{ row.total }},
-                {% endfor %}
-            ]
-        }]
-    }
-});
+        <div class="table-responsive">
 
-</script>
-<script>
+            <table class="table table-hover mb-0">
 
-const engineerCtx = document.getElementById("engineerChart");
+                <thead class="table-light">
 
-new Chart(engineerCtx, {
+                    <tr>
 
-    type: "bar",
+                        <th>
+                            Incident #
+                        </th>
 
-    data: {
+                        <th>
+                            Title
+                        </th>
 
-        labels: [
+                        <th>
+                            Priority
+                        </th>
 
-            {% for row in engineer_data %}
-                "{{ row.assigned_to__username|default:'Unassigned' }}",
-            {% endfor %}
+                        <th>
+                            Status
+                        </th>
 
-        ],
+                        <th>
+                            Created
+                        </th>
 
-        datasets: [
+                    </tr>
 
-            {
+                </thead>
 
-                label: "Assigned Incidents",
 
-                data: [
+                <tbody>
 
-                    {% for row in engineer_data %}
-                        {{ row.total }},
+                    {% for incident in recent_incidents %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ incident.incident_number }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ incident.title }}
+                        </td>
+
+                        <td>
+                            {{ incident.get_priority_display }}
+                        </td>
+
+                        <td>
+                            <span class="badge bg-primary">
+                                {{ incident.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ incident.created_at|date:"d M Y H:i" }}
+                        </td>
+
+                    </tr>
+
                     {% endfor %}
 
-                ],
+                </tbody>
 
-                borderWidth: 1
+            </table>
 
-            }
+        </div>
 
-        ]
+        {% else %}
 
-    },
+        <div class="text-center text-muted py-4">
 
-    options: {
+            No recent incidents found.
 
-        responsive: true,
+        </div>
 
-        plugins: {
+        {% endif %}
 
-            legend: {
 
-                display: true
+    </div>
 
-            }
+</div>
+```
 
-        },
+</div>
 
-        scales: {
-
-            y: {
-
-                beginAtZero: true,
-
-                ticks: {
-
-                    precision: 0
-
-                }
-
-            }
-
-        }
-
-    }
-
-});
-
-</script>
-<script>
-
-const slaCtx = document.getElementById("slaChart");
-
-new Chart(slaCtx, {
-
-    type: "bar",
-
-    data: {
-
-        labels: [
-
-            {% for row in sla_data %}
-                "{{ row.month|date:'M Y' }}",
-            {% endfor %}
-
-        ],
-
-        datasets: [{
-
-            label: "SLA Breaches",
-
-            data: [
-
-                {% for row in sla_data %}
-                    {{ row.total }},
-                {% endfor %}
-
-            ],
-
-            borderWidth: 1
-
-        }]
-
-    },
-
-    options: {
-
-        responsive: true,
-
-        scales: {
-
-            y: {
-
-                beginAtZero: true
-
-            }
-
-        }
-
-    }
-
-});
-
-</script>
-<script>
-
-const resolutionCtx = document.getElementById("resolutionChart");
-
-new Chart(resolutionCtx, {
-
-    type: "line",
-
-    data: {
-
-        labels: [
-
-            {% for row in resolution_data %}
-                "{{ row.month|date:'M Y' }}",
-            {% endfor %}
-
-        ],
-
-        datasets: [{
-
-            label: "Avg Resolution (Hours)",
-
-            data: [
-
-                {% for row in resolution_data %}
-                    {{ row.avg_hours|default:0 }},
-                {% endfor %}
-
-            ],
-
-            borderWidth: 2,
-
-            tension: 0.4,
-
-            fill: false
-
-        }]
-
-    },
-
-    options: {
-
-        responsive: true,
-
-        scales: {
-
-            y: {
-
-                beginAtZero: true
-
-            }
-
-        }
-
-    }
-
-});
-
-</script>
 {% endblock %}

@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+
+{% block title %}
+KEDB - Known Error Database
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<!-- Page Header -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold mb-1">
+            Known Error Database
+        </h2>
+
+        <p class="text-muted mb-0">
+            Manage known errors, root causes and workarounds.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'kedb_create' %}"
+        class="btn btn-primary"
+    >
+
+        <i class="bi bi-plus-circle"></i>
+
+        Create Known Error
+
+    </a>
+
+</div>
+
+
+
+<!-- Summary Cards -->
+
+<div class="row g-3 mb-4">
+
+
+    <!-- Total -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <h6 class="text-muted">
+                            Total Known Errors
+                        </h6>
+
+                        <h2 class="fw-bold mb-0">
+                            {{ known_errors|length }}
+                        </h2>
+
+                    </div>
+
+                    <div class="text-primary fs-2">
+
+                        <i class="bi bi-database-check"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Open -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <h6 class="text-muted">
+                            Open
+                        </h6>
+
+                        <h2 class="fw-bold mb-0">
+
+                            {{ open_count|default:"0" }}
+
+                        </h2>
+
+                    </div>
+
+                    <div class="text-warning fs-2">
+
+                        <i class="bi bi-exclamation-circle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Known Error -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <h6 class="text-muted">
+                            Known Errors
+                        </h6>
+
+                        <h2 class="fw-bold mb-0">
+
+                            {{ known_error_count|default:"0" }}
+
+                        </h2>
+
+                    </div>
+
+                    <div class="text-danger fs-2">
+
+                        <i class="bi bi-bug"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Resolved -->
+
+    <div class="col-md-3">
+
+        <div class="card shadow-sm border-0 h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <h6 class="text-muted">
+                            Resolved
+                        </h6>
+
+                        <h2 class="fw-bold mb-0">
+
+                            {{ resolved_count|default:"0" }}
+
+                        </h2>
+
+                    </div>
+
+                    <div class="text-success fs-2">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- KEDB Table -->
+
+<!-- KEDB Table -->
+
+<div class="card shadow-sm border-0">
+
+
+<div class="card-header bg-white py-3">
+
+    <div class="d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0 fw-bold">
+            Known Errors
+        </h5>
+
+        <span class="badge bg-secondary">
+            {{ known_errors|length }} Records
+        </span>
+
+    </div>
+
+</div>
+
+
+<div class="card-body">
+
+    {% if known_errors %}
+
+    <div class="table-responsive">
+
+        <table
+            id="kedbTable"
+            class="table table-hover table-bordered align-middle w-100"
+        >
+
+            <thead class="table-light">
+
+                <tr>
+
+                    <th>Error #</th>
+
+                    <th>Title</th>
+
+                    <th>Application</th>
+
+                    <th>Status</th>
+
+                    <th>Created By</th>
+
+                    <th>Created</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for error in known_errors %}
+
+                <tr>
+
+                    <!-- Error Number -->
+
+                    <td>
+
+                        <strong class="text-primary">
+                            {{ error.error_number }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- Title -->
+
+                    <td>
+                        {{ error.title }}
+                    </td>
+
+
+                    <!-- Application -->
+
+                    <td>
+
+                        {% if error.application %}
+
+                            {{ error.application }}
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                —
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- Status -->
+
+                    <td>
+
+                        {% if error.status == "Open" %}
+
+                            <span class="badge bg-warning text-dark">
+                                Open
+                            </span>
+
+                        {% elif error.status == "Known Error" %}
+
+                            <span class="badge bg-danger">
+                                Known Error
+                            </span>
+
+                        {% elif error.status == "Resolved" %}
+
+                            <span class="badge bg-success">
+                                Resolved
+                            </span>
+
+                        {% elif error.status == "Closed" %}
+
+                            <span class="badge bg-secondary">
+                                Closed
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-secondary">
+                                {{ error.status }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- Created By -->
+
+                    <td>
+
+                        {% if error.created_by %}
+
+                            {{ error.created_by.get_full_name|default:error.created_by.username }}
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                —
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- Created -->
+
+                    <td>
+
+                        {% if error.created_at %}
+
+                            {{ error.created_at|date:"d M Y" }}
+
+                        {% else %}
+
+                            —
+                            
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- Actions -->
+
+                    <td class="text-center">
+
+                        <div class="btn-group">
+
+                            <a
+                                href="#"
+                                class="btn btn-sm btn-outline-primary"
+                                title="View"
+                            >
+
+                                <i class="bi bi-eye"></i>
+
+                            </a>
+
+
+                            <a
+                                href="#"
+                                class="btn btn-sm btn-outline-warning"
+                                title="Edit"
+                            >
+
+                                <i class="bi bi-pencil"></i>
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    {% else %}
+
+
+    <!-- Empty State -->
+
+    <div class="text-center py-5">
+
+        <i
+            class="bi bi-database-x text-muted"
+            style="font-size: 3rem;"
+        ></i>
+
+
+        <h5 class="mt-3">
+            No Known Errors Found
+        </h5>
+
+
+        <p class="text-muted">
+            Your Known Error Database is currently empty.
+        </p>
+
+
+        <a
+            href="{% url 'kedb_create' %}"
+            class="btn btn-primary"
+        >
+
+            <i class="bi bi-plus-circle"></i>
+
+            Create Known Error
+
+        </a>
+
+    </div>
+
+
+    {% endif %}
+
+</div>
+
+</div>
+
+{% if known_errors %}
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        if (
+            typeof $ !== "undefined" &&
+            $.fn.DataTable
+        ) {
+
+            $("#kedbTable").DataTable({
+
+                pageLength: 10,
+
+                lengthMenu: [
+                    [10, 25, 50, 100],
+                    [10, 25, 50, 100]
+                ],
+
+                order: [
+                    [5, "desc"]
+                ],
+
+                columnDefs: [
+
+                    {
+                        orderable: false,
+                        searchable: false,
+                        targets: 6
+                    }
+
+                ],
+
+                language: {
+
+                    search: "Search Known Errors:",
+
+                    lengthMenu:
+                        "Show _MENU_ records",
+
+                    info:
+                        "Showing _START_ to _END_ of _TOTAL_ known errors",
+
+                    infoEmpty:
+                        "No known errors available",
+
+                    zeroRecords:
+                        "No matching known errors found"
+
+                }
+
+            });
+
+        }
+
+    }
+);
+
+</script>
+
+{% endif %}
+
+
+</div>
+
+{% endblock %}

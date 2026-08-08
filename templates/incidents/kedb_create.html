@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Known Error - KEDB
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<!-- Page Header -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold mb-1">
+            Create Known Error
+        </h2>
+
+        <p class="text-muted mb-0">
+            Add a known error to the Known Error Database.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'kedb_list' %}"
+        class="btn btn-outline-secondary"
+    >
+
+        <i class="bi bi-arrow-left"></i>
+
+        Back to KEDB
+
+    </a>
+
+</div>
+
+
+
+<!-- Form Card -->
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white py-3">
+
+        <h5 class="mb-0 fw-bold">
+
+            <i class="bi bi-database-check text-primary"></i>
+
+            Known Error Details
+
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <form
+            method="POST"
+            action="{% url 'kedb_create' %}"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="row g-4">
+
+
+                <!-- Error Title -->
+
+                <div class="col-md-8">
+
+                    <label
+                        for="title"
+                        class="form-label fw-semibold"
+                    >
+
+                        Error Title
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        class="form-control"
+                        placeholder="Example: Application login timeout"
+                        maxlength="200"
+                        required
+                    >
+
+
+                    <div class="form-text">
+
+                        Enter a short and meaningful title for the known error.
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Application -->
+
+                <div class="col-md-4">
+
+                    <label
+                        for="application"
+                        class="form-label fw-semibold"
+                    >
+
+                        Application
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="application"
+                        name="application"
+                        class="form-control"
+                        placeholder="Example: Incident Management Portal"
+                        maxlength="200"
+                    >
+
+
+                    <div class="form-text">
+
+                        Application affected by this error.
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Description -->
+
+                <div class="col-md-12">
+
+                    <label
+                        for="description"
+                        class="form-label fw-semibold"
+                    >
+
+                        Error Description
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        class="form-control"
+                        rows="5"
+                        placeholder="Describe the error, symptoms and when it occurs..."
+                        required
+                    ></textarea>
+
+
+                    <div class="form-text">
+
+                        Describe the issue clearly so that support teams can identify it quickly.
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Root Cause -->
+
+                <div class="col-md-12">
+
+                    <label
+                        for="root_cause"
+                        class="form-label fw-semibold"
+                    >
+
+                        Root Cause
+
+                    </label>
+
+
+                    <textarea
+                        id="root_cause"
+                        name="root_cause"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Example: Database connection pool reaches the maximum configured limit during peak hours."
+                    ></textarea>
+
+
+                    <div class="form-text">
+
+                        Mention the identified technical or business root cause.
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Workaround -->
+
+                <div class="col-md-12">
+
+                    <label
+                        for="workaround"
+                        class="form-label fw-semibold"
+                    >
+
+                        Workaround
+
+                    </label>
+
+
+                    <textarea
+                        id="workaround"
+                        name="workaround"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Example: Restart the application service to clear inactive database connections."
+                    ></textarea>
+
+
+                    <div class="form-text">
+
+                        Provide the temporary solution that support teams can use.
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Permanent Solution -->
+
+                <div class="col-md-12">
+
+                    <label
+                        for="solution"
+                        class="form-label fw-semibold"
+                    >
+
+                        Permanent Solution
+
+                    </label>
+
+
+                    <textarea
+                        id="solution"
+                        name="solution"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Describe the permanent fix or recommended solution."
+                    ></textarea>
+
+
+                    <div class="form-text">
+
+                        Describe the permanent resolution if one is available.
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Status -->
+
+                <div class="col-md-4">
+
+                    <label
+                        for="status"
+                        class="form-label fw-semibold"
+                    >
+
+                        Status
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+
+                    <select
+                        id="status"
+                        name="status"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="Open">
+                            Open
+                        </option>
+
+                        <option value="Known Error" selected>
+                            Known Error
+                        </option>
+
+                        <option value="Resolved">
+                            Resolved
+                        </option>
+
+                        <option value="Closed">
+                            Closed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- Information -->
+
+            <div class="alert alert-info mt-4">
+
+                <div class="d-flex">
+
+                    <div class="me-3">
+
+                        <i class="bi bi-info-circle fs-4"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            KEDB Information
+                        </strong>
+
+                        <p class="mb-0 mt-1">
+
+                            The Error Number will be generated automatically
+                            after creating the known error.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Buttons -->
+
+            <div class="border-top pt-4 mt-4">
+
+                <div class="d-flex justify-content-end gap-2">
+
+
+                    <a
+                        href="{% url 'kedb_list' %}"
+                        class="btn btn-secondary"
+                    >
+
+                        <i class="bi bi-x-circle"></i>
+
+                        Cancel
+
+                    </a>
+
+
+                    <button
+                        type="reset"
+                        class="btn btn-outline-secondary"
+                    >
+
+                        <i class="bi bi-arrow-counterclockwise"></i>
+
+                        Reset
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        <i class="bi bi-save"></i>
+
+                        Create Known Error
+
+                    </button>
+
+
+                </div>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="mb-1">Change Calendar</h2>
+        <p class="text-muted mb-0">
+            View scheduled and planned changes
+        </p>
+    </div>
+
+    <a href="{% url 'change_list' %}" class="btn btn-secondary">
+        ← Back to Changes
+    </a>
+
+</div>
+
+
+<!-- Calendar Card -->
+<div class="card shadow-sm">
+
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            📅 Change Schedule
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        <div id="changeCalendar"></div>
+
+    </div>
+
+</div>
+
+
+<!-- Change Legend -->
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header">
+        <h5 class="mb-0">Change Status</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-3 mb-2">
+                <span class="badge bg-warning text-dark">
+                    Pending CAB
+                </span>
+            </div>
+
+            <div class="col-md-3 mb-2">
+                <span class="badge bg-success">
+                    Approved
+                </span>
+            </div>
+
+            <div class="col-md-3 mb-2">
+                <span class="badge bg-info text-dark">
+                    Scheduled
+                </span>
+            </div>
+
+            <div class="col-md-3 mb-2">
+                <span class="badge bg-primary">
+                    Implemented
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- FullCalendar CSS -->
+
+<link
+    href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"
+    rel="stylesheet"
+/>
+
+<!-- FullCalendar JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const calendarElement = document.getElementById('changeCalendar');
+
+    const calendar = new FullCalendar.Calendar(calendarElement, {
+
+        initialView: 'dayGridMonth',
+
+        height: 'auto',
+
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listMonth'
+        },
+
+        events: [
+
+            {% for change in changes %}
+
+            {
+                title: "{{ change.change_number }} - {{ change.title|escapejs }}",
+
+                start: "{{ change.scheduled_date|date:'Y-m-d\\TH:i:s' }}",
+
+                url: "{% url 'change_detail' change.id %}",
+
+                extendedProps: {
+                    status: "{{ change.status|escapejs }}"
+                }
+            },
+
+            {% endfor %}
+
+        ],
+
+        eventClick: function(info) {
+
+            if (info.event.url) {
+
+                info.jsEvent.preventDefault();
+
+                window.location.href = info.event.url;
+
+            }
+
+        }
+
+    });
+
+    calendar.render();
+
+});
+
+</script>
+
+{% endblock %}

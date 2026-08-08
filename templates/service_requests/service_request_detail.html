@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h3>
+                {{ service_request.request_number }}
+            </h3>
+
+            <p class="text-muted mb-0">
+                Service Request Details
+            </p>
+        </div>
+
+        <div>
+
+            <a
+                href="{% url 'update_service_request' service_request.pk %}"
+                class="btn btn-primary"
+            >
+                Edit Request
+            </a>
+
+            <a
+                href="{% url 'service_request_list' %}"
+                class="btn btn-secondary"
+            >
+                Back
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Request Information -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Request Information
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Request Number</strong>
+
+                    <div>
+                        {{ service_request.request_number }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Title</strong>
+
+                    <div>
+                        {{ service_request.title }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Service</strong>
+
+                    <div>
+                        {{ service_request.service.name|default:"-" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Category</strong>
+
+                    <div>
+                        {{ service_request.category }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Priority</strong>
+
+                    <div>
+                        <span class="badge bg-primary">
+                            {{ service_request.priority }}
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Status</strong>
+
+                    <div>
+                        <span class="badge bg-info">
+                            {{ service_request.get_status_display }}
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Requester</strong>
+
+                    <div>
+                        {{ service_request.requester }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Assigned Engineer</strong>
+
+                    <div>
+                        {{ service_request.assigned_to|default:"Unassigned" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>SLA Due</strong>
+
+                    <div>
+                        {{ service_request.sla_due_at|date:"d M Y H:i" }}
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <strong>Created</strong>
+
+                    <div>
+                        {{ service_request.created_at|date:"d M Y H:i" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <hr>
+
+
+            <strong>Description</strong>
+
+            <p class="mt-2">
+                {{ service_request.description|linebreaks }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Approval -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Approval
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for approval in service_request.approvals.all %}
+
+                <div class="border rounded p-3 mb-2">
+
+                    <strong>
+                        {{ approval.approver }}
+                    </strong>
+
+                    <span class="badge bg-secondary">
+                        {{ approval.status }}
+                    </span>
+
+                    {% if approval.comments %}
+                        <p class="mb-0 mt-2">
+                            {{ approval.comments }}
+                        </p>
+                    {% endif %}
+
+                </div>
+
+            {% empty %}
+
+                <p class="text-muted">
+                    No approval record available.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Comments -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Comments
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for comment in service_request.comments.all %}
+
+                <div class="border-bottom pb-3 mb-3">
+
+                    <strong>
+                        {{ comment.user }}
+                    </strong>
+
+                    <small class="text-muted">
+                        {{ comment.created_at|date:"d M Y H:i" }}
+                    </small>
+
+                    <p class="mb-0 mt-2">
+                        {{ comment.comment|linebreaks }}
+                    </p>
+
+                </div>
+
+            {% empty %}
+
+                <p class="text-muted">
+                    No comments yet.
+                </p>
+
+            {% endfor %}
+
+
+            <form
+                method="post"
+                action="{% url 'add_service_request_comment' service_request.pk %}"
+            >
+
+                {% csrf_token %}
+
+                {{ comment_form.comment }}
+
+                <button
+                    type="submit"
+                    class="btn btn-primary mt-2"
+                >
+                    Add Comment
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Attachments -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Attachments
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for attachment in service_request.attachments.all %}
+
+                <div class="mb-2">
+
+                    📎
+
+                    <a href="{{ attachment.file.url }}">
+                        {{ attachment.file.name }}
+                    </a>
+
+                    <small class="text-muted">
+                        by {{ attachment.uploaded_by }}
+                    </small>
+
+                </div>
+
+            {% empty %}
+
+                <p class="text-muted">
+                    No attachments.
+                </p>
+
+            {% endfor %}
+
+
+            <form
+                method="post"
+                enctype="multipart/form-data"
+                action="{% url 'add_service_request_attachment' service_request.pk %}"
+                class="mt-3"
+            >
+
+                {% csrf_token %}
+
+                {{ attachment_form.file }}
+
+                <button
+                    type="submit"
+                    class="btn btn-outline-primary mt-2"
+                >
+                    Upload Attachment
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

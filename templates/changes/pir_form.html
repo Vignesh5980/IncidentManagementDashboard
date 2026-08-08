@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+```
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        {% if form.instance.pk %}
+            <h2>Edit Post-Implementation Review</h2>
+            <p class="text-muted mb-0">
+                Update the review for {{ change.change_number }}
+            </p>
+        {% else %}
+            <h2>Post-Implementation Review</h2>
+            <p class="text-muted mb-0">
+                Complete the PIR for {{ change.change_number }}
+            </p>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'change_detail' change.id %}"
+       class="btn btn-secondary">
+        ← Back to Change
+    </a>
+
+</div>
+
+
+<!-- Change Summary -->
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-primary text-white">
+
+        <h5 class="mb-0">
+            Change Request
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-4">
+
+                <small class="text-muted">
+                    Change Number
+                </small>
+
+                <h6>
+                    {{ change.change_number }}
+                </h6>
+
+            </div>
+
+
+            <div class="col-md-5">
+
+                <small class="text-muted">
+                    Change Title
+                </small>
+
+                <h6>
+                    {{ change.title }}
+                </h6>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <small class="text-muted">
+                    Current Status
+                </small>
+
+                <div>
+
+                    {% if change.status == "Implemented" %}
+
+                        <span class="badge bg-primary">
+                            Implemented
+                        </span>
+
+                    {% elif change.status == "Closed" %}
+
+                        <span class="badge bg-dark">
+                            Closed
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+                            {{ change.status }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- PIR Form -->
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-dark text-white">
+
+        <h5 class="mb-0">
+            📋 Post-Implementation Review
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <!-- Form Errors -->
+            {% if form.non_field_errors %}
+
+                <div class="alert alert-danger">
+
+                    {% for error in form.non_field_errors %}
+
+                        <div>
+                            {{ error }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- Success -->
+            <div class="mb-4">
+
+                <label for="{{ form.successful.id_for_label }}"
+                       class="form-label">
+
+                    <strong>
+                        Was the change successful?
+                    </strong>
+
+                    <span class="text-danger">*</span>
+
+                </label>
+
+                <div class="form-check">
+
+                    {{ form.successful }}
+
+                </div>
+
+                {% if form.successful.errors %}
+
+                    <div class="text-danger small mt-1">
+                        {{ form.successful.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Observations -->
+            <div class="mb-4">
+
+                <label for="{{ form.observations.id_for_label }}"
+                       class="form-label">
+
+                    <strong>
+                        Observations
+                    </strong>
+
+                    <span class="text-danger">*</span>
+
+                </label>
+
+                {{ form.observations }}
+
+                <div class="form-text">
+                    Record what happened during and after implementation.
+                </div>
+
+                {% if form.observations.errors %}
+
+                    <div class="text-danger small">
+                        {{ form.observations.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Lessons Learned -->
+            <div class="mb-4">
+
+                <label for="{{ form.lessons.id_for_label }}"
+                       class="form-label">
+
+                    <strong>
+                        Lessons Learned
+                    </strong>
+
+                    <span class="text-danger">*</span>
+
+                </label>
+
+                {{ form.lessons }}
+
+                <div class="form-text">
+                    Document lessons that can help improve future changes.
+                </div>
+
+                {% if form.lessons.errors %}
+
+                    <div class="text-danger small">
+                        {{ form.lessons.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Recommendations -->
+            <div class="mb-4">
+
+                <label for="{{ form.recommendations.id_for_label }}"
+                       class="form-label">
+
+                    <strong>
+                        Recommendations
+                    </strong>
+
+                    <span class="text-danger">*</span>
+
+                </label>
+
+                {{ form.recommendations }}
+
+                <div class="form-text">
+                    Add recommendations or corrective actions for future changes.
+                </div>
+
+                {% if form.recommendations.errors %}
+
+                    <div class="text-danger small">
+                        {{ form.recommendations.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Form Actions -->
+            <div class="border-top pt-4">
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a
+                        href="{% url 'change_detail' change.id %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        {% if form.instance.pk %}
+                            Update PIR
+                        {% else %}
+                            Submit PIR
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- PIR Workflow -->
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Change Lifecycle
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row text-center align-items-center">
+
+            <div class="col">
+                <span class="badge bg-secondary p-2">
+                    Draft
+                </span>
+            </div>
+
+            <div class="col-auto">
+                →
+            </div>
+
+            <div class="col">
+                <span class="badge bg-warning text-dark p-2">
+                    Pending CAB
+                </span>
+            </div>
+
+            <div class="col-auto">
+                →
+            </div>
+
+            <div class="col">
+                <span class="badge bg-success p-2">
+                    Approved
+                </span>
+            </div>
+
+            <div class="col-auto">
+                →
+            </div>
+
+            <div class="col">
+                <span class="badge bg-info text-dark p-2">
+                    Scheduled
+                </span>
+            </div>
+
+            <div class="col-auto">
+                →
+            </div>
+
+            <div class="col">
+                <span class="badge bg-primary p-2">
+                    Implemented
+                </span>
+            </div>
+
+            <div class="col-auto">
+                →
+            </div>
+
+            <div class="col">
+                <span class="badge bg-dark p-2">
+                    PIR
+                </span>
+            </div>
+
+            <div class="col-auto">
+                →
+            </div>
+
+            <div class="col">
+                <span class="badge bg-success p-2">
+                    Closed
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+{% endblock %}

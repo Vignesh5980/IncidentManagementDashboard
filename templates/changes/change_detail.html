@@ -1,0 +1,676 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="mb-1">
+            {{ change.change_number }}
+        </h2>
+
+        <p class="text-muted mb-0">
+            {{ change.title }}
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+
+        <a href="{% url 'change_list' %}"
+           class="btn btn-secondary">
+            ← Back
+        </a>
+
+        <a href="{% url 'change_update' change.id %}"
+           class="btn btn-primary">
+            ✏ Edit
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Status Banner -->
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-8">
+
+                <h5 class="mb-1">
+                    Change Status
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Current state of this change request
+                </p>
+
+            </div>
+
+            <div class="col-md-4 text-md-end">
+
+                {% if change.status == "Draft" %}
+
+                    <span class="badge bg-secondary fs-6 px-3 py-2">
+                        Draft
+                    </span>
+
+                {% elif change.status == "Pending CAB" %}
+
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                        Pending CAB
+                    </span>
+
+                {% elif change.status == "Approved" %}
+
+                    <span class="badge bg-success fs-6 px-3 py-2">
+                        Approved
+                    </span>
+
+                {% elif change.status == "Rejected" %}
+
+                    <span class="badge bg-danger fs-6 px-3 py-2">
+                        Rejected
+                    </span>
+
+                {% elif change.status == "Scheduled" %}
+
+                    <span class="badge bg-info text-dark fs-6 px-3 py-2">
+                        Scheduled
+                    </span>
+
+                {% elif change.status == "Implemented" %}
+
+                    <span class="badge bg-primary fs-6 px-3 py-2">
+                        Implemented
+                    </span>
+
+                {% elif change.status == "Closed" %}
+
+                    <span class="badge bg-dark fs-6 px-3 py-2">
+                        Closed
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-secondary fs-6 px-3 py-2">
+                        {{ change.status }}
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row">
+
+    <!-- Main Information -->
+    <div class="col-lg-8">
+
+        <!-- Change Information -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    Change Information
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <strong>Change Number</strong>
+
+                        <p class="mb-0">
+                            {{ change.change_number }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <strong>Title</strong>
+
+                        <p class="mb-0">
+                            {{ change.title }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-12 mb-3">
+
+                        <strong>Description</strong>
+
+                        <div class="border rounded p-3 mt-2 bg-light">
+                            {{ change.description|linebreaks }}
+                        </div>
+
+                    </div>
+
+
+                    {% if change.change_type %}
+
+                    <div class="col-md-6 mb-3">
+
+                        <strong>Change Type</strong>
+
+                        <p class="mb-0">
+                            {{ change.change_type }}
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if change.priority %}
+
+                    <div class="col-md-6 mb-3">
+
+                        <strong>Priority</strong>
+
+                        <p class="mb-0">
+                            {{ change.priority }}
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if change.impact %}
+
+                    <div class="col-md-6 mb-3">
+
+                        <strong>Impact</strong>
+
+                        <p class="mb-0">
+                            {{ change.impact }}
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    {% if change.risk %}
+
+                    <div class="col-md-6 mb-3">
+
+                        <strong>Risk</strong>
+
+                        <p class="mb-0">
+                            {{ change.risk }}
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Implementation Plan -->
+        {% if change.implementation_plan %}
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    🔄 Implementation Plan
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                {{ change.implementation_plan|linebreaks }}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- Rollback Plan -->
+        {% if change.rollback_plan %}
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    ↩ Rollback Plan
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                {{ change.rollback_plan|linebreaks }}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- CAB Information -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-dark text-white">
+
+                <h5 class="mb-0">
+                    👥 CAB Approval
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% if change.status == "Pending CAB" %}
+
+                    <div class="alert alert-warning">
+                        This change is waiting for CAB approval.
+                    </div>
+
+                    <a href="{% url 'cab_approval' change.id %}"
+                       class="btn btn-warning">
+
+                        Review CAB Approval
+
+                    </a>
+
+                {% elif change.status == "Approved" %}
+
+                    <div class="alert alert-success">
+                        ✓ This change has been approved by CAB.
+                    </div>
+
+                {% elif change.status == "Rejected" %}
+
+                    <div class="alert alert-danger">
+                        ✕ This change has been rejected by CAB.
+                    </div>
+
+                {% else %}
+
+                    <p class="text-muted mb-0">
+                        CAB approval is not currently required.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- PIR -->
+        {% if change.status == "Implemented" or change.status == "Closed" %}
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-secondary text-white">
+
+                <h5 class="mb-0">
+                    📋 Post Implementation Review
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% if change.pir %}
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <strong>Result</strong>
+
+                            {% if change.pir.successful %}
+
+                                <p>
+                                    <span class="badge bg-success">
+                                        Successful
+                                    </span>
+                                </p>
+
+                            {% else %}
+
+                                <p>
+                                    <span class="badge bg-danger">
+                                        Unsuccessful
+                                    </span>
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="col-md-8">
+
+                            <strong>Created By</strong>
+
+                            <p>
+                                {{ change.pir.created_by }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <a href="{% url 'pir_detail' change.pir.id %}"
+                       class="btn btn-outline-dark">
+
+                        View PIR
+
+                    </a>
+
+                {% else %}
+
+                    <p class="text-muted">
+                        No Post-Implementation Review has been created yet.
+                    </p>
+
+                    <a href="{% url 'pir_create' change.id %}"
+                       class="btn btn-dark">
+
+                        Create PIR
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+
+        <!-- Change Summary -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+                    Change Summary
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+
+                    <small class="text-muted">
+                        Created By
+                    </small>
+
+                    <div>
+                        {% if change.created_by %}
+                            {{ change.created_by }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+
+                </div>
+
+
+                {% if change.created_at %}
+
+                <div class="mb-3">
+
+                    <small class="text-muted">
+                        Created At
+                    </small>
+
+                    <div>
+                        {{ change.created_at|date:"d M Y, H:i" }}
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+                {% if change.scheduled_date %}
+
+                <div class="mb-3">
+
+                    <small class="text-muted">
+                        Scheduled Date
+                    </small>
+
+                    <div>
+                        📅 {{ change.scheduled_date|date:"d M Y, H:i" }}
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+                {% if change.maintenance_window %}
+
+                <div class="mb-3">
+
+                    <small class="text-muted">
+                        Maintenance Window
+                    </small>
+
+                    <div>
+                        {{ change.maintenance_window }}
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- Quick Actions -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+                    Quick Actions
+                </h5>
+
+            </div>
+
+            <div class="card-body d-grid gap-2">
+
+                {% if change.status == "Draft" %}
+
+                <a href="{% url 'cab_approval' change.id %}"
+                   class="btn btn-warning">
+
+                    Submit for CAB
+
+                </a>
+
+                {% endif %}
+
+
+                {% if change.status == "Pending CAB" %}
+
+                <a href="{% url 'cab_approval' change.id %}"
+                   class="btn btn-warning">
+
+                    CAB Approval
+
+                </a>
+
+                {% endif %}
+
+
+                {% if change.status == "Approved" %}
+
+                <a href="{% url 'change_update' change.id %}"
+                   class="btn btn-info">
+
+                    Schedule Change
+
+                </a>
+
+                {% endif %}
+
+
+                {% if change.status == "Scheduled" %}
+
+                <a href="{% url 'change_update' change.id %}"
+                   class="btn btn-primary">
+
+                    Mark as Implemented
+
+                </a>
+
+                {% endif %}
+
+
+                {% if change.status == "Implemented" %}
+
+                <a href="{% url 'pir_create' change.id %}"
+                   class="btn btn-dark">
+
+                    Create PIR
+
+                </a>
+
+                {% endif %}
+
+
+                <a href="{% url 'change_calendar' %}"
+                   class="btn btn-outline-primary">
+
+                    📅 Change Calendar
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Workflow -->
+        <div class="card shadow-sm">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+                    Change Workflow
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="list-group">
+
+                    <div class="list-group-item
+                        {% if change.status == 'Draft' %}
+                            active
+                        {% endif %}">
+
+                        1. Draft
+
+                    </div>
+
+
+                    <div class="list-group-item
+                        {% if change.status == 'Pending CAB' %}
+                            active
+                        {% endif %}">
+
+                        2. Pending CAB
+
+                    </div>
+
+
+                    <div class="list-group-item
+                        {% if change.status == 'Approved' %}
+                            active
+                        {% endif %}">
+
+                        3. Approved
+
+                    </div>
+
+
+                    <div class="list-group-item
+                        {% if change.status == 'Scheduled' %}
+                            active
+                        {% endif %}">
+
+                        4. Scheduled
+
+                    </div>
+
+
+                    <div class="list-group-item
+                        {% if change.status == 'Implemented' %}
+                            active
+                        {% endif %}">
+
+                        5. Implemented
+
+                    </div>
+
+
+                    <div class="list-group-item
+                        {% if change.status == 'Closed' %}
+                            active
+                        {% endif %}">
+
+                        6. Closed / PIR
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+{% endblock %}

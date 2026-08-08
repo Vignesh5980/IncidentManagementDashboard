@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">CAB Approval</h2>
+        <p class="text-muted mb-0">
+            Review and approve the Change Request
+        </p>
+    </div>
+
+    <a href="{% url 'change_list' %}" class="btn btn-secondary">
+        ← Back to Changes
+    </a>
+</div>
+
+
+<!-- Change Details -->
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Change Request Details</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <strong>Change Number</strong>
+                <p class="mb-0">
+                    {{ change.change_number }}
+                </p>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <strong>Title</strong>
+                <p class="mb-0">
+                    {{ change.title }}
+                </p>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <strong>Description</strong>
+                <p class="mb-0">
+                    {{ change.description }}
+                </p>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <strong>Current Status</strong>
+                <p>
+                    <span class="badge bg-warning text-dark">
+                        {{ change.status }}
+                    </span>
+                </p>
+            </div>
+
+            {% if change.created_by %}
+            <div class="col-md-6 mb-3">
+                <strong>Created By</strong>
+                <p class="mb-0">
+                    {{ change.created_by }}
+                </p>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- CAB Approval Form -->
+<div class="card shadow-sm">
+
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">CAB Decision</h5>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <!-- Decision -->
+            <div class="mb-3">
+
+                <label for="decision" class="form-label">
+                    <strong>Decision</strong>
+                </label>
+
+                <select
+                    name="decision"
+                    id="decision"
+                    class="form-select"
+                    required
+                >
+                    <option value="">-- Select Decision --</option>
+                    <option value="Approved">Approve</option>
+                    <option value="Rejected">Reject</option>
+                </select>
+
+            </div>
+
+
+            <!-- Comments -->
+            <div class="mb-3">
+
+                <label for="comments" class="form-label">
+                    <strong>CAB Comments</strong>
+                </label>
+
+                <textarea
+                    name="comments"
+                    id="comments"
+                    class="form-control"
+                    rows="5"
+                    placeholder="Enter CAB comments, justification or observations..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- Scheduled Date -->
+            <div class="mb-3">
+
+                <label for="scheduled_date" class="form-label">
+                    <strong>Scheduled Date</strong>
+                </label>
+
+                <input
+                    type="datetime-local"
+                    name="scheduled_date"
+                    id="scheduled_date"
+                    class="form-control"
+                >
+
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="d-flex gap-2">
+
+                <button
+                    type="submit"
+                    name="decision"
+                    value="Approved"
+                    class="btn btn-success"
+                >
+                    ✓ Approve Change
+                </button>
+
+                <button
+                    type="submit"
+                    name="decision"
+                    value="Rejected"
+                    class="btn btn-danger"
+                >
+                    ✕ Reject Change
+                </button>
+
+                <a
+                    href="{% url 'change_list' %}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- Workflow -->
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header">
+        <h5 class="mb-0">Change Workflow</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between text-center">
+
+            <div>
+                <span class="badge bg-secondary p-2">
+                    Draft
+                </span>
+            </div>
+
+            <div class="pt-2">
+                →
+            </div>
+
+            <div>
+                <span class="badge bg-warning text-dark p-2">
+                    Pending CAB
+                </span>
+            </div>
+
+            <div class="pt-2">
+                →
+            </div>
+
+            <div>
+                <span class="badge bg-success p-2">
+                    Approved
+                </span>
+            </div>
+
+            <div class="pt-2">
+                →
+            </div>
+
+            <div>
+                <span class="badge bg-info text-dark p-2">
+                    Scheduled
+                </span>
+            </div>
+
+            <div class="pt-2">
+                →
+            </div>
+
+            <div>
+                <span class="badge bg-primary p-2">
+                    Implemented
+                </span>
+            </div>
+
+            <div class="pt-2">
+                →
+            </div>
+
+            <div>
+                <span class="badge bg-dark p-2">
+                    PIR
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+{% endblock %}

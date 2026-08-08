@@ -184,3 +184,90 @@ class IncidentHistory(models.Model):
 
     def __str__(self):
         return f"{self.incident.incident_number} - {self.action}"
+
+
+class KnownError(models.Model):
+
+    STATUS_CHOICES = [
+        ("Open", "Open"),
+        ("Known Error", "Known Error"),
+        ("Resolved", "Resolved"),
+        ("Closed", "Closed"),
+    ]
+
+    error_number = models.CharField(
+        max_length=20,
+        unique=True,
+        editable=False
+    )
+
+    title = models.CharField(max_length=200)
+
+    description = models.TextField()
+
+    root_cause = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    workaround = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    solution = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    application = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="Open"
+    )
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="known_errors"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def save(self, *args, **kwargs):
+
+        if not self.error_number:
+
+            last_error = KnownError.objects.order_by(
+                "-id"
+            ).first()
+
+            if last_error:
+
+                number = last_error.id + 1
+
+            else:
+
+                number = 1
+
+            self.error_number = f"KE-{number:05d}"
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+
+        return f"{self.error_number} - {self.title}"

@@ -36,4 +36,7 @@ urlpatterns = [
         views.export_incidents_csv,
         name="export_incidents_csv",
     ),
+
+    path("kedb/", views.kedb_list, name="kedb_list"),
+    path("kedb/create/", views.kedb_create, name="kedb_create"),
 ]

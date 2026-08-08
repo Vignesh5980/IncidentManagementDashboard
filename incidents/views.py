@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import IncidentCreateForm, CommentForm, IncidentUpdateForm
-from .models import Incident, Comment, IncidentHistory
+from .models import Incident, Comment, IncidentHistory, KnownError
 from accounts.decorators import role_required
 from accounts.models import CustomUser
 from django.db.models import Q
@@ -417,4 +417,69 @@ def dashboard(request):
         request,
         "incidents/dashboard.html",
         context
+    )
+
+@login_required
+def kedb_list(request):
+
+    known_errors = KnownError.objects.all().order_by("-created_at")
+
+    open_count = known_errors.filter(
+        status="Open"
+    ).count()
+
+    known_error_count = known_errors.filter(
+        status="Known Error"
+    ).count()
+
+    resolved_count = known_errors.filter(
+        status="Resolved"
+    ).count()
+
+    return render(
+        request,
+        "incidents/kedb_list.html",
+        {
+            "known_errors": known_errors,
+            "open_count": open_count,
+            "known_error_count": known_error_count,
+            "resolved_count": resolved_count,
+        }
+    )
+
+
+@login_required
+def kedb_create(request):
+
+    if request.method == "POST":
+
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        root_cause = request.POST.get("root_cause")
+        workaround = request.POST.get("workaround")
+        solution = request.POST.get("solution")
+        application = request.POST.get("application")
+        status = request.POST.get("status")
+
+        KnownError.objects.create(
+            title=title,
+            description=description,
+            root_cause=root_cause,
+            workaround=workaround,
+            solution=solution,
+            application=application,
+            status=status,
+            created_by=request.user
+        )
+
+        messages.success(
+            request,
+            "Known Error created successfully."
+        )
+
+        return redirect("kedb_list")
+
+    return render(
+        request,
+        "incidents/kedb_create.html"
     )
