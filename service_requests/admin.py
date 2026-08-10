@@ -91,7 +91,6 @@ class ServiceRequestApprovalAdmin(admin.ModelAdmin):
         "service_request",
         "approver",
         "status",
-        "approved_at",
     )
 
     list_filter = (

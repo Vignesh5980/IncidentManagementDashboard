@@ -1,0 +1,595 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid px-0">
+
+    <!-- ===================================================== -->
+    <!-- PAGE HEADER -->
+    <!-- ===================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h3 class="fw-bold mb-1">
+                Create Service Request
+            </h3>
+
+            <p class="text-muted mb-0">
+                Submit a new service request
+            </p>
+        </div>
+
+        <a
+            href="{% url 'service_request_list' %}"
+            class="btn btn-outline-secondary"
+        >
+            <i class="bi bi-arrow-left me-1"></i>
+            Back
+        </a>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- REQUEST FORM CARD -->
+    <!-- ===================================================== -->
+
+    <div class="card border-0 shadow-sm">
+
+        <!-- Card Header -->
+        <div class="card-header bg-white border-bottom py-3">
+
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                Request Information
+            </h5>
+
+        </div>
+
+
+        <!-- Card Body -->
+        <div class="card-body p-4">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                <!-- ================================================= -->
+                <!-- NON-FIELD ERRORS -->
+                <!-- ================================================= -->
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-danger">
+
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- ================================================= -->
+                <!-- SERVICE -->
+                <!-- ================================================= -->
+
+                <div class="mb-4">
+
+                    <label
+                        for="{{ form.service.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        Service
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    {{ form.service }}
+
+                    {% if form.service.errors %}
+
+                        <div class="text-danger small mt-1">
+                            {{ form.service.errors }}
+                        </div>
+
+                    {% endif %}
+
+                    <div class="form-text">
+                        Select the service for this request.
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- TITLE -->
+                <!-- ================================================= -->
+
+                <div class="mb-4">
+
+                    <label
+                        for="{{ form.title.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        Title
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    {{ form.title }}
+
+                    {% if form.title.errors %}
+
+                        <div class="text-danger small mt-1">
+                            {{ form.title.errors }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- DESCRIPTION -->
+                <!-- ================================================= -->
+
+                <div class="mb-4">
+
+                    <label
+                        for="{{ form.description.id_for_label }}"
+                        class="form-label fw-semibold"
+                    >
+                        Description
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    {{ form.description }}
+
+                    {% if form.description.errors %}
+
+                        <div class="text-danger small mt-1">
+                            {{ form.description.errors }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- CATEGORY / SUBCATEGORY -->
+                <!-- ================================================= -->
+
+                <div class="row g-4 mb-4">
+
+                    <!-- Category -->
+                    <div class="col-md-6">
+
+                        <label
+                            for="{{ form.category.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Category
+                        </label>
+
+                        {{ form.category }}
+
+                        {% if form.category.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ form.category.errors }}
+                            </div>
+
+                        {% endif %}
+
+                        <div class="form-text">
+                            Automatically populated from the selected service.
+                        </div>
+
+                    </div>
+
+
+                    <!-- Subcategory -->
+                    <div class="col-md-6">
+
+                        <label
+                            for="{{ form.subcategory.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Subcategory
+                        </label>
+
+                        {{ form.subcategory }}
+
+                        {% if form.subcategory.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ form.subcategory.errors }}
+                            </div>
+
+                        {% endif %}
+
+                        <div class="form-text">
+                            Automatically populated from the selected service.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- ASSIGNED TO / PRIORITY -->
+                <!-- ================================================= -->
+
+                <div class="row g-4 mb-4">
+
+                    <!-- Assigned To -->
+                    <div class="col-md-6">
+
+                        <label
+                            for="{{ form.assigned_to.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Assigned To
+                        </label>
+
+                        {{ form.assigned_to }}
+
+                        {% if form.assigned_to.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ form.assigned_to.errors }}
+                            </div>
+
+                        {% endif %}
+
+                        <div class="form-text">
+                            Select a Support team member.
+                        </div>
+
+                    </div>
+
+
+                    <!-- Priority -->
+                    <div class="col-md-6">
+
+                        <label
+                            for="{{ form.priority.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Priority
+                        </label>
+
+                        {{ form.priority }}
+
+                        {% if form.priority.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ form.priority.errors }}
+                            </div>
+
+                        {% endif %}
+
+                        <div class="form-text">
+                            Automatically populated from the selected service.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- SLA INFORMATION -->
+                <!-- ================================================= -->
+
+                <div class="mb-4">
+
+                    <label class="form-label fw-semibold">
+                        SLA Information
+                    </label>
+
+                    <div
+                        id="sla-status"
+                        class="alert alert-secondary mb-0"
+                    >
+
+                        <i class="bi bi-info-circle me-2"></i>
+
+                        Select a service to view SLA information.
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- DIVIDER -->
+                <!-- ================================================= -->
+
+                <hr class="my-4">
+
+
+                <!-- ================================================= -->
+                <!-- BUTTONS -->
+                <!-- ================================================= -->
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a
+                        href="{% url 'service_request_list' %}"
+                        class="btn btn-outline-secondary"
+                    >
+                        <i class="bi bi-x-lg me-1"></i>
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        <i class="bi bi-check-lg me-1"></i>
+                        Create Service Request
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- SERVICE INFORMATION / SLA JAVASCRIPT -->
+<!-- ========================================================= -->
+<script>
+    const serviceInformationUrl =
+        "{% url 'service_information' 0 %}";
+</script>
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const serviceSelect =
+            document.getElementById("id_service");
+
+        const categoryField =
+            document.getElementById("id_category");
+
+        const subcategoryField =
+            document.getElementById("id_subcategory");
+
+        const priorityField =
+            document.getElementById("id_priority");
+
+        const slaStatus =
+            document.getElementById("sla-status");
+
+
+        if (!serviceSelect) {
+
+            console.error(
+                "Service field not found."
+            );
+
+            return;
+        }
+
+
+        serviceSelect.addEventListener(
+            "change",
+            function () {
+
+                const serviceId =
+                    this.value;
+
+
+                // --------------------------------------------
+                // Clear fields if no service selected
+                // --------------------------------------------
+
+                if (!serviceId) {
+
+                    categoryField.value = "";
+                    subcategoryField.value = "";
+                    priorityField.value = "";
+
+                    slaStatus.className =
+                        "alert alert-secondary mb-0 py-2";
+
+                    slaStatus.innerHTML = `
+                        <i class="bi bi-info-circle me-1"></i>
+                        Select a service to view SLA.
+                    `;
+
+                    return;
+                }
+
+
+                // --------------------------------------------
+                // Loading state
+                // --------------------------------------------
+
+                slaStatus.className =
+                    "alert alert-warning mb-0 py-2";
+
+                slaStatus.innerHTML = `
+                    <i class="bi bi-hourglass-split me-1"></i>
+                    Loading service information...
+                `;
+
+
+                // --------------------------------------------
+                // Build endpoint
+                // --------------------------------------------
+
+                const url =
+                    "{% url 'service_information' 0 %}"
+                    .replace(
+                        "/0/",
+                        `/${serviceId}/`
+                    );
+
+
+                console.log(
+                    "Fetching:",
+                    url
+                );
+
+
+                // --------------------------------------------
+                // Fetch service information
+                // --------------------------------------------
+
+                fetch(url)
+
+                    .then(response => {
+
+                        console.log(
+                            "Response status:",
+                            response.status
+                        );
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                `HTTP ${response.status}`
+                            );
+
+                        }
+
+
+                        return response.json();
+
+                    })
+
+
+                    // ----------------------------------------
+                    // Successful response
+                    // ----------------------------------------
+
+                    .then(data => {
+
+                        console.log(
+                            "Service information:",
+                            data
+                        );
+
+
+                        // Category
+                        categoryField.value =
+                            data.category || "";
+
+
+                        // Subcategory
+                        subcategoryField.value =
+                            data.subcategory || "";
+
+
+                        // Priority
+                        if (data.priority) {
+
+                            priorityField.value =
+                                data.priority;
+
+                        }
+
+
+                        // SLA
+                        slaStatus.className =
+                            "alert alert-info mb-0 py-2";
+
+                        slaStatus.innerHTML = `
+
+                            <div class="fw-semibold">
+
+                                <i class="bi bi-clock me-1"></i>
+
+                                SLA Target
+
+                            </div>
+
+                            <div class="mt-1">
+
+                                ${data.sla_hours} hours
+
+                            </div>
+
+                            <small class="text-muted">
+
+                                <strong>
+                                    Category:
+                                </strong>
+
+                                ${data.category || "N/A"}
+
+                                <br>
+
+                                <strong>
+                                    Subcategory:
+                                </strong>
+
+                                ${data.subcategory || "N/A"}
+
+                            </small>
+
+                        `;
+
+                    })
+
+
+                    // ----------------------------------------
+                    // Error
+                    // ----------------------------------------
+
+                    .catch(error => {
+
+                        console.error(
+                            "Service information error:",
+                            error
+                        );
+
+
+                        categoryField.value = "";
+                        subcategoryField.value = "";
+
+
+                        slaStatus.className =
+                            "alert alert-danger mb-0 py-2";
+
+                        slaStatus.innerHTML = `
+
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+
+                            Unable to load service information.
+
+                            <div class="small mt-1">
+
+                                Please check the service information
+                                endpoint.
+
+                            </div>
+
+                        `;
+
+                    });
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+{% endblock %}

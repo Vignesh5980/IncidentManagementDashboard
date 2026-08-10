@@ -1,5 +1,6 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+
 
 class ServiceCatalog(models.Model):
 
@@ -49,27 +50,39 @@ class ServiceCatalog(models.Model):
     def __str__(self):
         return self.name
 
+
 class ServiceRequest(models.Model):
-    service = models.ForeignKey(
-        ServiceCatalog,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="requests"
-    )
-    # -----------------------------
-    # Priority
-    # -----------------------------
-    IN_PROGRESS = "IN_PROGRESS"
-    CLOSED = "CLOSED"
+
+    # -------------------------------------------------
+    # Status
+    # -------------------------------------------------
+
+    DRAFT = "DRAFT"
+    SUBMITTED = "SUBMITTED"
+    PENDING_APPROVAL = "PENDING_APPROVAL"
+    APPROVED = "APPROVED"
     REJECTED = "REJECTED"
+    ASSIGNED = "ASSIGNED"
+    IN_PROGRESS = "IN_PROGRESS"
+    FULFILLED = "FULFILLED"
+    CLOSED = "CLOSED"
 
     STATUS_CHOICES = [
-        (IN_PROGRESS, "In Progress"),
-        (CLOSED, "Closed"),
+        (DRAFT, "Draft"),
+        (SUBMITTED, "Submitted"),
+        (PENDING_APPROVAL, "Pending Approval"),
+        (APPROVED, "Approved"),
         (REJECTED, "Rejected"),
+        (ASSIGNED, "Assigned"),
+        (IN_PROGRESS, "In Progress"),
+        (FULFILLED, "Fulfilled"),
+        (CLOSED, "Closed"),
     ]
-    
+
+    # -------------------------------------------------
+    # Priority
+    # -------------------------------------------------
+
     P1 = "P1"
     P2 = "P2"
     P3 = "P3"
@@ -82,35 +95,21 @@ class ServiceRequest(models.Model):
         (P4, "P4 - Low"),
     ]
 
-    # -----------------------------
-    # Status
-    # -----------------------------
+    # -------------------------------------------------
+    # Service
+    # -------------------------------------------------
 
-    DRAFT = "DRAFT"
-    SUBMITTED = "SUBMITTED"
-    PENDING_APPROVAL = "PENDING_APPROVAL"
-    APPROVED = "APPROVED"
-    ASSIGNED = "ASSIGNED"
-    IN_PROGRESS = "IN_PROGRESS"
-    FULFILLED = "FULFILLED"
-    CLOSED = "CLOSED"
-    REJECTED = "REJECTED"
+    service = models.ForeignKey(
+        ServiceCatalog,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="requests"
+    )
 
-    STATUS_CHOICES = [
-        (DRAFT, "Draft"),
-        (SUBMITTED, "Submitted"),
-        (PENDING_APPROVAL, "Pending Approval"),
-        (APPROVED, "Approved"),
-        (ASSIGNED, "Assigned"),
-        (IN_PROGRESS, "In Progress"),
-        (FULFILLED, "Fulfilled"),
-        (CLOSED, "Closed"),
-        (REJECTED, "Rejected"),
-    ]
-
-    # -----------------------------
+    # -------------------------------------------------
     # Request Number
-    # -----------------------------
+    # -------------------------------------------------
 
     request_number = models.CharField(
         max_length=20,
@@ -118,9 +117,9 @@ class ServiceRequest(models.Model):
         editable=False
     )
 
-    # -----------------------------
+    # -------------------------------------------------
     # Request Information
-    # -----------------------------
+    # -------------------------------------------------
 
     title = models.CharField(
         max_length=200
@@ -136,9 +135,9 @@ class ServiceRequest(models.Model):
         max_length=100
     )
 
-    # -----------------------------
+    # -------------------------------------------------
     # Users
-    # -----------------------------
+    # -------------------------------------------------
 
     requester = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -155,9 +154,9 @@ class ServiceRequest(models.Model):
         related_name="assigned_service_requests"
     )
 
-    # -----------------------------
+    # -------------------------------------------------
     # Priority / Status
-    # -----------------------------
+    # -------------------------------------------------
 
     priority = models.CharField(
         max_length=2,
@@ -171,9 +170,9 @@ class ServiceRequest(models.Model):
         default=DRAFT
     )
 
-    # -----------------------------
+    # -------------------------------------------------
     # SLA
-    # -----------------------------
+    # -------------------------------------------------
 
     sla_due_at = models.DateTimeField(
         null=True,
@@ -184,9 +183,9 @@ class ServiceRequest(models.Model):
         default=False
     )
 
-    # -----------------------------
+    # -------------------------------------------------
     # Timestamps
-    # -----------------------------
+    # -------------------------------------------------
 
     created_at = models.DateTimeField(
         auto_now_add=True
@@ -206,9 +205,9 @@ class ServiceRequest(models.Model):
         blank=True
     )
 
-    # -----------------------------
-    # Generate REQ Number
-    # -----------------------------
+    # -------------------------------------------------
+    # Generate Request Number
+    # -------------------------------------------------
 
     def save(self, *args, **kwargs):
 
@@ -225,14 +224,13 @@ class ServiceRequest(models.Model):
             else:
                 number = 1
 
-            self.request_number = (
-                f"REQ{number:06d}"
-            )
+            self.request_number = f"REQ{number:06d}"
 
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.request_number
+
 
 class ServiceRequestComment(models.Model):
 
@@ -256,9 +254,10 @@ class ServiceRequestComment(models.Model):
 
     def __str__(self):
         return (
-            f"{self.service_request.request_number} "
-            f"- {self.user}"
+            f"{self.service_request.request_number} - "
+            f"{self.user}"
         )
+
 
 class ServiceRequestAttachment(models.Model):
 
@@ -284,18 +283,27 @@ class ServiceRequestAttachment(models.Model):
 
     def __str__(self):
         return self.file.name
-    
+
+
 class ServiceRequestApproval(models.Model):
+
+    # -------------------------------------------------
+    # Approval Status
+    # -------------------------------------------------
 
     PENDING = "PENDING"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
 
-    STATUS_CHOICES = [
+    APPROVAL_STATUS_CHOICES = [
         (PENDING, "Pending"),
         (APPROVED, "Approved"),
         (REJECTED, "Rejected"),
     ]
+
+    # -------------------------------------------------
+    # Request
+    # -------------------------------------------------
 
     service_request = models.ForeignKey(
         ServiceRequest,
@@ -303,20 +311,42 @@ class ServiceRequestApproval(models.Model):
         related_name="approvals"
     )
 
+    # -------------------------------------------------
+    # Approver
+    # -------------------------------------------------
+
     approver = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        blank=True,
+        related_name="service_request_approvals"
     )
+
+    # -------------------------------------------------
+    # Approval Status
+    # -------------------------------------------------
 
     status = models.CharField(
         max_length=20,
-        choices=STATUS_CHOICES,
+        choices=APPROVAL_STATUS_CHOICES,
         default=PENDING
     )
 
+    # -------------------------------------------------
+    # Comments
+    # -------------------------------------------------
+
     comments = models.TextField(
         blank=True
+    )
+
+    # -------------------------------------------------
+    # Timestamps
+    # -------------------------------------------------
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
     )
 
     approved_at = models.DateTimeField(
@@ -324,6 +354,54 @@ class ServiceRequestApproval(models.Model):
         blank=True
     )
 
+    # -------------------------------------------------
+    # String representation
+    # -------------------------------------------------
+
+    def __str__(self):
+        return (
+            f"{self.service_request.request_number} - "
+            f"{self.status}"
+        )
+
+
+class ServiceRequestHistory(models.Model):
+
+    service_request = models.ForeignKey(
+        ServiceRequest,
+        on_delete=models.CASCADE,
+        related_name="history"
+    )
+
+    changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    action = models.CharField(
+        max_length=100
+    )
+
+    old_value = models.TextField(
+        blank=True
+    )
+
+    new_value = models.TextField(
+        blank=True
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return (
+            f"{self.service_request.request_number} - "
+            f"{self.action}"
+        )
+

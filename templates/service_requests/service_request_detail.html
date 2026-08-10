@@ -2,274 +2,625 @@
 
 {% block content %}
 
-<div class="container-fluid mt-4">
+<!-- ============================================================
+     PAGE HEADER
+     ============================================================ -->
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div>
-            <h3>
-                {{ service_request.request_number }}
-            </h3>
+    <div>
 
-            <p class="text-muted mb-0">
-                Service Request Details
-            </p>
-        </div>
+        <h3 class="mb-1">
+            {{ service_request.request_number }}
+        </h3>
 
-        <div>
-
-            <a
-                href="{% url 'update_service_request' service_request.pk %}"
-                class="btn btn-primary"
-            >
-                Edit Request
-            </a>
-
-            <a
-                href="{% url 'service_request_list' %}"
-                class="btn btn-secondary"
-            >
-                Back
-            </a>
-
-        </div>
+        <p class="text-muted mb-0">
+            Service Request Details
+        </p>
 
     </div>
 
 
-    <!-- Request Information -->
+    <div class="d-flex gap-2">
 
-    <div class="card shadow mb-4">
+        <!-- Approval button -->
 
-        <div class="card-header">
+        {% if service_request.status == "PENDING_APPROVAL" %}
 
-            <h5 class="mb-0">
-                Request Information
-            </h5>
+            {% if request.user.role == "ADMIN" or request.user.role == "TEAM_LEAD" %}
 
-        </div>
+                <a
+                    href="{% url 'approve_service_request' service_request.pk %}"
+                    class="btn btn-warning"
+                >
+                    Review Request
+                </a>
 
-        <div class="card-body">
+            {% endif %}
 
-            <div class="row">
+        {% endif %}
 
-                <div class="col-md-6 mb-3">
 
-                    <strong>Request Number</strong>
+        <!-- Edit -->
 
-                    <div>
-                        {{ service_request.request_number }}
-                    </div>
+        <a
+            href="{% url 'update_service_request' service_request.pk %}"
+            class="btn btn-primary"
+        >
+            Edit Request
+        </a>
 
+
+        <!-- Back -->
+
+        <a
+            href="{% url 'service_request_list' %}"
+            class="btn btn-secondary"
+        >
+            Back
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     REQUEST INFORMATION
+     ============================================================ -->
+
+<div class="card shadow mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Request Information
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <!-- Request Number -->
+
+            <div class="col-md-6 mb-3">
+
+                <strong>
+                    Request Number
+                </strong>
+
+                <div>
+                    {{ service_request.request_number }}
                 </div>
 
+            </div>
 
-                <div class="col-md-6 mb-3">
 
-                    <strong>Title</strong>
+            <!-- Title -->
 
-                    <div>
-                        {{ service_request.title }}
-                    </div>
+            <div class="col-md-6 mb-3">
 
+                <strong>
+                    Title
+                </strong>
+
+                <div>
+                    {{ service_request.title }}
                 </div>
 
+            </div>
 
-                <div class="col-md-6 mb-3">
 
-                    <strong>Service</strong>
+            <!-- Service -->
 
-                    <div>
-                        {{ service_request.service.name|default:"-" }}
-                    </div>
+            <div class="col-md-6 mb-3">
 
+                <strong>
+                    Service
+                </strong>
+
+                <div>
+                    {{ service_request.service.name|default:"-" }}
                 </div>
 
+            </div>
 
-                <div class="col-md-6 mb-3">
 
-                    <strong>Category</strong>
+            <!-- Category -->
 
-                    <div>
-                        {{ service_request.category }}
-                    </div>
+            <div class="col-md-6 mb-3">
 
+                <strong>
+                    Category
+                </strong>
+
+                <div>
+                    {{ service_request.category|default:"-" }}
                 </div>
 
+            </div>
 
-                <div class="col-md-6 mb-3">
 
-                    <strong>Priority</strong>
+            <!-- Subcategory -->
 
-                    <div>
+            <div class="col-md-6 mb-3">
+
+                <strong>
+                    Subcategory
+                </strong>
+
+                <div>
+                    {{ service_request.subcategory|default:"-" }}
+                </div>
+
+            </div>
+
+
+            <!-- Priority -->
+
+            <div class="col-md-6 mb-3">
+
+                <strong>
+                    Priority
+                </strong>
+
+                <div>
+
+                    {% if service_request.priority == "P1" %}
+
+                        <span class="badge bg-danger">
+                            P1 - Critical
+                        </span>
+
+                    {% elif service_request.priority == "P2" %}
+
+                        <span class="badge bg-warning text-dark">
+                            P2 - High
+                        </span>
+
+                    {% elif service_request.priority == "P3" %}
+
                         <span class="badge bg-primary">
-                            {{ service_request.priority }}
+                            P3 - Medium
                         </span>
-                    </div>
 
-                </div>
+                    {% elif service_request.priority == "P4" %}
 
-
-                <div class="col-md-6 mb-3">
-
-                    <strong>Status</strong>
-
-                    <div>
-                        <span class="badge bg-info">
-                            {{ service_request.get_status_display }}
+                        <span class="badge bg-secondary">
+                            P4 - Low
                         </span>
-                    </div>
 
-                </div>
+                    {% else %}
 
+                        <span class="badge bg-secondary">
+                            {{ service_request.priority|default:"-" }}
+                        </span>
 
-                <div class="col-md-6 mb-3">
-
-                    <strong>Requester</strong>
-
-                    <div>
-                        {{ service_request.requester }}
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-6 mb-3">
-
-                    <strong>Assigned Engineer</strong>
-
-                    <div>
-                        {{ service_request.assigned_to|default:"Unassigned" }}
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-6 mb-3">
-
-                    <strong>SLA Due</strong>
-
-                    <div>
-                        {{ service_request.sla_due_at|date:"d M Y H:i" }}
-                    </div>
-
-                </div>
-
-
-                <div class="col-md-6 mb-3">
-
-                    <strong>Created</strong>
-
-                    <div>
-                        {{ service_request.created_at|date:"d M Y H:i" }}
-                    </div>
+                    {% endif %}
 
                 </div>
 
             </div>
 
 
-            <hr>
+            <!-- Status -->
 
+            <div class="col-md-6 mb-3">
 
-            <strong>Description</strong>
+                <strong>
+                    Status
+                </strong>
 
-            <p class="mt-2">
-                {{ service_request.description|linebreaks }}
-            </p>
+                <div>
 
-        </div>
+                    {% if service_request.status == "PENDING_APPROVAL" %}
 
-    </div>
+                        <span class="badge bg-warning text-dark">
+                            Pending Approval
+                        </span>
 
+                    {% elif service_request.status == "APPROVED" %}
 
-    <!-- Approval -->
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
 
-    <div class="card shadow mb-4">
+                    {% elif service_request.status == "REJECTED" %}
 
-        <div class="card-header">
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
 
-            <h5 class="mb-0">
-                Approval
-            </h5>
+                    {% elif service_request.status == "IN_PROGRESS" %}
 
-        </div>
+                        <span class="badge bg-primary">
+                            In Progress
+                        </span>
 
-        <div class="card-body">
+                    {% elif service_request.status == "FULFILLED" %}
 
-            {% for approval in service_request.approvals.all %}
+                        <span class="badge bg-success">
+                            Fulfilled
+                        </span>
 
-                <div class="border rounded p-3 mb-2">
+                    {% elif service_request.status == "CLOSED" %}
 
-                    <strong>
-                        {{ approval.approver }}
-                    </strong>
+                        <span class="badge bg-dark">
+                            Closed
+                        </span>
 
-                    <span class="badge bg-secondary">
-                        {{ approval.status }}
-                    </span>
+                    {% elif service_request.status == "ASSIGNED" %}
 
-                    {% if approval.comments %}
-                        <p class="mb-0 mt-2">
-                            {{ approval.comments }}
-                        </p>
+                        <span class="badge bg-info text-dark">
+                            Assigned
+                        </span>
+
+                    {% elif service_request.status == "SUBMITTED" %}
+
+                        <span class="badge bg-secondary">
+                            Submitted
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+                            {{ service_request.get_status_display }}
+                        </span>
+
                     {% endif %}
 
                 </div>
 
-            {% empty %}
+            </div>
 
-                <p class="text-muted">
-                    No approval record available.
-                </p>
 
-            {% endfor %}
+            <!-- Requester -->
+
+            <div class="col-md-6 mb-3">
+
+                <strong>
+                    Requester
+                </strong>
+
+                <div>
+                    {{ service_request.requester|default:"-" }}
+                </div>
+
+            </div>
+
+
+            <!-- Assigned Engineer -->
+
+            <div class="col-md-6 mb-3">
+
+                <strong>
+                    Assigned Engineer
+                </strong>
+
+                <div>
+                    {{ service_request.assigned_to|default:"Unassigned" }}
+                </div>
+
+            </div>
+
+
+            <!-- SLA Due -->
+
+            <div class="col-md-6 mb-3">
+
+                <strong>
+                    SLA Due
+                </strong>
+
+                <div>
+
+                    {% if service_request.sla_due_at %}
+
+                        {{ service_request.sla_due_at|date:"d M Y H:i" }}
+
+                    {% else %}
+
+                        <span class="text-muted">
+                            Not configured
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- Created -->
+
+            <div class="col-md-6 mb-3">
+
+                <strong>
+                    Created
+                </strong>
+
+                <div>
+                    {{ service_request.created_at|date:"d M Y H:i" }}
+                </div>
+
+            </div>
+
+
+            <!-- Updated -->
+
+            <div class="col-md-6 mb-3">
+
+                <strong>
+                    Last Updated
+                </strong>
+
+                <div>
+                    {{ service_request.updated_at|date:"d M Y H:i" }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <hr>
+
+
+        <!-- Description -->
+
+        <strong>
+            Description
+        </strong>
+
+        <div class="mt-2">
+
+            {{ service_request.description|linebreaks }}
 
         </div>
 
     </div>
 
+</div>
 
-    <!-- Comments -->
 
-    <div class="card shadow mb-4">
+<!-- ============================================================
+     SLA STATUS
+     ============================================================ -->
 
-        <div class="card-header">
+<div class="card shadow mb-4">
 
-            <h5 class="mb-0">
-                Comments
-            </h5>
+    <div class="card-header">
 
-        </div>
+        <h5 class="mb-0">
+            SLA Status
+        </h5>
 
-        <div class="card-body">
+    </div>
 
-            {% for comment in service_request.comments.all %}
 
-                <div class="border-bottom pb-3 mb-3">
+    <div class="card-body">
 
-                    <strong>
-                        {{ comment.user }}
-                    </strong>
+        {% if not service_request.sla_due_at %}
 
-                    <small class="text-muted">
-                        {{ comment.created_at|date:"d M Y H:i" }}
-                    </small>
+            <div class="alert alert-secondary mb-0">
 
-                    <p class="mb-0 mt-2">
-                        {{ comment.comment|linebreaks }}
-                    </p>
+                ℹ️
+
+                <strong>
+                    SLA Not Configured
+                </strong>
+
+                <br>
+
+                No SLA due date has been configured
+                for this service request.
+
+            </div>
+
+
+        {% elif sla_breached %}
+
+            <div class="alert alert-danger mb-0">
+
+                🚨
+
+                <strong>
+                    SLA BREACHED
+                </strong>
+
+                <br>
+
+                SLA Due:
+                {{ service_request.sla_due_at|date:"d M Y H:i" }}
+
+            </div>
+
+
+        {% else %}
+
+            <div class="alert alert-success mb-0">
+
+                ✅
+
+                <strong>
+                    SLA Within Target
+                </strong>
+
+                <br>
+
+                SLA Due:
+                {{ service_request.sla_due_at|date:"d M Y H:i" }}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     APPROVAL
+     ============================================================ -->
+
+<div class="card shadow mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Approval
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        {% for approval in service_request.approvals.all %}
+
+            <div class="border rounded p-3 mb-3">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <strong>
+                            {{ approval.approver|default:"Not assigned" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        {% if approval.status == "APPROVED" %}
+
+                            <span class="badge bg-success">
+                                Approved
+                            </span>
+
+                        {% elif approval.status == "REJECTED" %}
+
+                            <span class="badge bg-danger">
+                                Rejected
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-warning text-dark">
+                                Pending
+                            </span>
+
+                        {% endif %}
+
+                    </div>
 
                 </div>
 
-            {% empty %}
 
-                <p class="text-muted">
-                    No comments yet.
-                </p>
+                {% if approval.comments %}
 
-            {% endfor %}
+                    <div class="mt-2">
 
+                        <strong>
+                            Comments:
+                        </strong>
+
+                        <p class="mb-0">
+                            {{ approval.comments|linebreaks }}
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+                {% if approval.approved_at %}
+
+                    <small class="text-muted">
+
+                        Decision Date:
+                        {{ approval.approved_at|date:"d M Y H:i" }}
+
+                    </small>
+
+                {% endif %}
+
+            </div>
+
+        {% empty %}
+
+            <p class="text-muted mb-0">
+                No approval record available.
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     COMMENTS
+     ============================================================ -->
+
+<div class="card shadow mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Comments
+        </h5>
+
+    </div>
+
+
+    <div class="card-body">
+
+        {% for comment in service_request.comments.all %}
+
+            <div class="border-bottom pb-3 mb-3">
+
+                <div>
+
+                    <strong>
+                        {{ comment.user|default:"Unknown User" }}
+                    </strong>
+
+                    <small class="text-muted ms-2">
+
+                        {{ comment.created_at|date:"d M Y H:i" }}
+
+                    </small>
+
+                </div>
+
+
+                <div class="mt-2">
+
+                    {{ comment.comment|linebreaks }}
+
+                </div>
+
+            </div>
+
+        {% empty %}
+
+            <p class="text-muted">
+                No comments yet.
+            </p>
+
+        {% endfor %}
+
+
+        <!-- Add Comment -->
+
+        {% if comment_form %}
 
             <form
                 method="post"
@@ -289,49 +640,64 @@
 
             </form>
 
-        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     ATTACHMENTS
+     ============================================================ -->
+
+<div class="card shadow mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Attachments
+        </h5>
 
     </div>
 
 
-    <!-- Attachments -->
+    <div class="card-body">
 
-    <div class="card shadow mb-4">
+        {% for attachment in service_request.attachments.all %}
 
-        <div class="card-header">
+            <div class="mb-3">
 
-            <h5 class="mb-0">
-                Attachments
-            </h5>
+                📎
 
-        </div>
+                <a
+                    href="{{ attachment.file.url }}"
+                    target="_blank"
+                >
+                    {{ attachment.file.name }}
+                </a>
 
-        <div class="card-body">
+                <small class="text-muted ms-2">
 
-            {% for attachment in service_request.attachments.all %}
+                    Uploaded by:
+                    {{ attachment.uploaded_by|default:"Unknown User" }}
 
-                <div class="mb-2">
+                </small>
 
-                    📎
+            </div>
 
-                    <a href="{{ attachment.file.url }}">
-                        {{ attachment.file.name }}
-                    </a>
+        {% empty %}
 
-                    <small class="text-muted">
-                        by {{ attachment.uploaded_by }}
-                    </small>
+            <p class="text-muted">
+                No attachments.
+            </p>
 
-                </div>
+        {% endfor %}
 
-            {% empty %}
 
-                <p class="text-muted">
-                    No attachments.
-                </p>
+        <!-- Upload Attachment -->
 
-            {% endfor %}
-
+        {% if attachment_form %}
 
             <form
                 method="post"
@@ -353,10 +719,11 @@
 
             </form>
 
-        </div>
+        {% endif %}
 
     </div>
 
 </div>
+
 
 {% endblock %}

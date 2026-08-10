@@ -41,4 +41,24 @@ urlpatterns = [
         views.add_service_request_attachment,
         name="add_service_request_attachment"
     ),
+    path(
+        "<int:pk>/approve/",
+        views.approve_service_request,
+        name="approve_service_request"
+    ),
+    path(
+        "service-information/<int:service_id>/",
+        views.service_information,
+        name="service_information",
+    ),
+    path(
+        "dashboard/",
+        views.service_request_dashboard,
+        name="service_request_dashboard"
+    ),
+    path(
+        "export/csv/",
+        views.export_service_requests_csv,
+        name="export_service_requests_csv"
+    ),
 ]

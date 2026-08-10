@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
 
@@ -40,3 +42,9 @@ urlpatterns = [
     path("kedb/", views.kedb_list, name="kedb_list"),
     path("kedb/create/", views.kedb_create, name="kedb_create"),
 ]
+
+
+urlpatterns += static(
+    settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT
+)

@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h3 class="mb-1">
+                Service Request Dashboard
+            </h3>
+
+            <p class="text-muted mb-0">
+                Service request operational overview
+            </p>
+        </div>
+
+        <a
+            href="{% url 'service_request_list' %}"
+            class="btn btn-secondary"
+        >
+            View Requests
+        </a>
+
+    </div>
+
+
+    <!-- Summary Cards -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Requests
+                    </h6>
+
+                    <h2>
+                        {{ total_requests }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Open Requests
+                    </h6>
+
+                    <h2>
+                        {{ open_requests }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Pending Approval
+                    </h6>
+
+                    <h2>
+                        {{ pending_approval }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        SLA Breached
+                    </h6>
+
+                    <h2>
+                        {{ sla_breached }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Charts -->
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    Monthly Service Requests
+                </div>
+
+                <div class="card-body">
+
+                    <canvas
+                        id="monthlyRequestChart"
+                        height="120"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    SLA Status
+                </div>
+
+                <div class="card-body">
+
+                    <canvas
+                        id="slaChart"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-12">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    Engineer Workload
+                </div>
+
+                <div class="card-body">
+
+                    <canvas
+                        id="engineerWorkloadChart"
+                        height="100"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const monthlyLabels = {{ monthly_labels|safe }};
+
+const monthlyValues = {{ monthly_values|safe }};
+
+const engineerLabels = {{ engineer_labels|safe }};
+
+const engineerValues = {{ engineer_values|safe }};
+
+
+new Chart(
+    document.getElementById(
+        "monthlyRequestChart"
+    ),
+    {
+        type: "line",
+
+        data: {
+
+            labels: monthlyLabels,
+
+            datasets: [{
+
+                label: "Requests",
+
+                data: monthlyValues,
+
+                tension: 0.3,
+
+                fill: false
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false
+
+        }
+
+    }
+);
+
+
+new Chart(
+    document.getElementById(
+        "slaChart"
+    ),
+    {
+        type: "doughnut",
+
+        data: {
+
+            labels: [
+                "Within SLA",
+                "SLA Breached"
+            ],
+
+            datasets: [{
+
+                data: [
+                    {{ sla_within }},
+                    {{ sla_breached }}
+                ]
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true
+
+        }
+
+    }
+);
+
+
+new Chart(
+    document.getElementById(
+        "engineerWorkloadChart"
+    ),
+    {
+        type: "bar",
+
+        data: {
+
+            labels: engineerLabels,
+
+            datasets: [{
+
+                label: "Assigned Requests",
+
+                data: engineerValues
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}
