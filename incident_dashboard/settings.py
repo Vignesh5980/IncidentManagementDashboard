@@ -145,6 +145,9 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 REST_FRAMEWORK = {
+
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
@@ -195,6 +198,31 @@ SPECTACULAR_SETTINGS = {
 
     "COMPONENT_SPLIT_REQUEST": True,
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Incident Management Dashboard API",
+    "DESCRIPTION": (
+        "REST API for Incident and Service Request Management"
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+#     "SECURITY": [
+#         {
+#             "BearerAuth": [],
+#         }
+#     ],
+
+#     "COMPONENTS": {
+#         "securitySchemes": {
+#             "BearerAuth": {
+#                 "type": "http",
+#                 "scheme": "bearer",
+#                 "bearerFormat": "JWT",
+#             }
+#         }
+#     },
+# }
 
 LOGGING = {
     "version": 1,

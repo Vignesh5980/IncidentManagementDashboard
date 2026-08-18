@@ -216,3 +216,21 @@ class IncidentSerializer(serializers.ModelSerializer):
                     )
 
         return attrs
+
+class IncidentResponseSerializer(serializers.Serializer):
+
+    success = serializers.BooleanField(
+        default=True
+    )
+
+    status_code = serializers.IntegerField(
+        default=200
+    )
+
+    message = serializers.CharField(
+        default="Incidents retrieved successfully."
+    )
+
+    data = IncidentSerializer(
+        many=True
+    )

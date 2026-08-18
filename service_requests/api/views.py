@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
+
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework.filters import (
@@ -8,10 +9,62 @@ from rest_framework.filters import (
     OrderingFilter,
 )
 
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_view,
+    OpenApiResponse,
+)
+
 from service_requests.models import ServiceRequest
 
 from .serializers import ServiceRequestSerializer
 from .permissions import ServiceRequestAPIPermission
+
+@extend_schema_view(
+    get=extend_schema(
+        summary="List service requests",
+        description=(
+            "Retrieve service requests with optional filtering, "
+            "searching, and ordering."
+        ),
+        responses={
+            200: OpenApiResponse(
+                response=ServiceRequestSerializer(many=True),
+                description="Service requests retrieved successfully.",
+            ),
+            401: OpenApiResponse(
+                description="Authentication credentials were not provided.",
+            ),
+            403: OpenApiResponse(
+                description="Permission denied.",
+            ),
+        },
+    ),
+
+    post=extend_schema(
+        summary="Create service request",
+        description=(
+            "Create a new service request. "
+            "The authenticated user is automatically assigned "
+            "as the requester."
+        ),
+        responses={
+            201: OpenApiResponse(
+                response=ServiceRequestSerializer,
+                description="Service request created successfully.",
+            ),
+            400: OpenApiResponse(
+                description="Invalid service request data.",
+            ),
+            401: OpenApiResponse(
+                description="Authentication credentials were not provided.",
+            ),
+            403: OpenApiResponse(
+                description="Permission denied.",
+            ),
+        },
+    ),
+)
 
 
 class ServiceRequestListCreateAPIView(
@@ -68,11 +121,142 @@ class ServiceRequestListCreateAPIView(
             .all()
         )
 
+    def list(self, request, *args, **kwargs):
+
+        queryset = self.filter_queryset(
+            self.get_queryset()
+        )
+
+        serializer = self.get_serializer(
+            queryset,
+            many=True
+        )
+
+        return Response({
+            "success": True,
+            "data": serializer.data,
+        })
+
+    def create(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        self.perform_create(serializer)
+
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
     def perform_create(self, serializer):
 
         serializer.save(
             requester=self.request.user
         )
+
+@extend_schema_view(
+    get=extend_schema(
+        summary="Retrieve service request",
+        description=(
+            "Retrieve a single service request by ID."
+        ),
+        responses={
+            200: OpenApiResponse(
+                response=ServiceRequestSerializer,
+                description="Service request retrieved successfully.",
+            ),
+            401: OpenApiResponse(
+                description="Authentication credentials were not provided.",
+            ),
+            403: OpenApiResponse(
+                description="Permission denied.",
+            ),
+            404: OpenApiResponse(
+                description="Service request not found.",
+            ),
+        },
+    ),
+
+    put=extend_schema(
+        summary="Update service request",
+        description=(
+            "Replace an existing service request."
+        ),
+        responses={
+            200: OpenApiResponse(
+                response=ServiceRequestSerializer,
+                description="Service request updated successfully.",
+            ),
+            400: OpenApiResponse(
+                description="Invalid service request data.",
+            ),
+            401: OpenApiResponse(
+                description="Authentication credentials were not provided.",
+            ),
+            403: OpenApiResponse(
+                description="Permission denied.",
+            ),
+            404: OpenApiResponse(
+                description="Service request not found.",
+            ),
+        },
+    ),
+
+    patch=extend_schema(
+        summary="Partially update service request",
+        description=(
+            "Partially update an existing service request."
+        ),
+        responses={
+            200: OpenApiResponse(
+                response=ServiceRequestSerializer,
+                description="Service request updated successfully.",
+            ),
+            400: OpenApiResponse(
+                description="Invalid service request data.",
+            ),
+            401: OpenApiResponse(
+                description="Authentication credentials were not provided.",
+            ),
+            403: OpenApiResponse(
+                description="Permission denied.",
+            ),
+            404: OpenApiResponse(
+                description="Service request not found.",
+            ),
+        },
+    ),
+
+    delete=extend_schema(
+        summary="Delete service request",
+        description=(
+            "Delete an existing service request."
+        ),
+        responses={
+            204: OpenApiResponse(
+                description="Service request deleted successfully.",
+            ),
+            401: OpenApiResponse(
+                description="Authentication credentials were not provided.",
+            ),
+            403: OpenApiResponse(
+                description="Permission denied.",
+            ),
+            404: OpenApiResponse(
+                description="Service request not found.",
+            ),
+        },
+    ),
+)
 
 class ServiceRequestDetailAPIView(
     generics.RetrieveUpdateDestroyAPIView
@@ -93,6 +277,111 @@ class ServiceRequestDetailAPIView(
     permission_classes = [
         ServiceRequestAPIPermission
     ]
+
+    def retrieve(self, request, *args, **kwargs):
+
+        instance = self.get_object()
+
+        serializer = self.get_serializer(
+            instance
+        )
+
+        return Response({
+            "success": True,
+            "data": serializer.data,
+        })
+
+    def update(self, request, *args, **kwargs):
+
+        partial = kwargs.pop(
+            "partial",
+            False
+        )
+
+        instance = self.get_object()
+
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+            partial=partial,
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        self.perform_update(serializer)
+
+        return Response({
+            "success": True,
+            "data": serializer.data,
+        })
+
+    def destroy(self, request, *args, **kwargs):
+
+        instance = self.get_object()
+
+        self.perform_destroy(instance)
+
+        return Response(
+            status=status.HTTP_204_NO_CONTENT
+        )
+
+@extend_schema_view(
+    put=extend_schema(
+        summary="Assign service request",
+        description=(
+            "Assign a service request to a user. "
+            "Only Admin and Team Lead users are permitted "
+            "to perform this operation."
+        ),
+        responses={
+            200: OpenApiResponse(
+                response=ServiceRequestSerializer,
+                description="Service request assigned successfully.",
+            ),
+            400: OpenApiResponse(
+                description="assigned_to is required.",
+            ),
+            401: OpenApiResponse(
+                description="Authentication credentials were not provided.",
+            ),
+            403: OpenApiResponse(
+                description="Only Admin or Team Lead can assign requests.",
+            ),
+            404: OpenApiResponse(
+                description="Service request not found.",
+            ),
+        },
+    ),
+
+    patch=extend_schema(
+        summary="Partially assign service request",
+        description=(
+            "Assign a service request to a user. "
+            "Only Admin and Team Lead users are permitted "
+            "to perform this operation."
+        ),
+        responses={
+            200: OpenApiResponse(
+                response=ServiceRequestSerializer,
+                description="Service request assigned successfully.",
+            ),
+            400: OpenApiResponse(
+                description="assigned_to is required.",
+            ),
+            401: OpenApiResponse(
+                description="Authentication credentials were not provided.",
+            ),
+            403: OpenApiResponse(
+                description="Only Admin or Team Lead can assign requests.",
+            ),
+            404: OpenApiResponse(
+                description="Service request not found.",
+            ),
+        },
+    ),
+)
 
 class ServiceRequestAssignAPIView(
     generics.UpdateAPIView
@@ -156,6 +445,7 @@ class ServiceRequestAssignAPIView(
             service_request
         )
 
-        return Response(
-            serializer.data
-        )
+        return Response({
+            "success": True,
+            "data": serializer.data,
+        })

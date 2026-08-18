@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.utils import timezone
-from service_requests.models import ServiceRequest
 from service_requests.models import (
     ServiceRequest,
     ServiceRequestApproval,

@@ -1,28 +1,28 @@
 openapi: 3.0.3
 info:
-  title: Incident Management API
+  title: Incident Management Dashboard API
   version: 1.0.0
-  description: API documentation for the Incident Management Dashboard.
+  description: REST API for Incident and Service Request Management
 paths:
-  /api/auth/token/:
+  /api/v1/auth/token/:
     post:
-      operationId: auth_token_create
+      operationId: v1_auth_token_create
       description: |-
         Takes a set of user credentials and returns an access and refresh JSON web
         token pair to prove the authentication of those credentials.
       tags:
-      - auth
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenObtainPairRequest'
+              $ref: '#/components/schemas/TokenObtainPair'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenObtainPairRequest'
+              $ref: '#/components/schemas/TokenObtainPair'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenObtainPairRequest'
+              $ref: '#/components/schemas/TokenObtainPair'
         required: true
       responses:
         '200':
@@ -31,25 +31,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenObtainPair'
           description: ''
-  /api/auth/token/refresh/:
+  /api/v1/auth/token/refresh/:
     post:
-      operationId: auth_token_refresh_create
+      operationId: v1_auth_token_refresh_create
       description: |-
         Takes a refresh type JSON web token and returns an access type JSON web
         token if the refresh token is valid.
       tags:
-      - auth
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenRefreshRequest'
+              $ref: '#/components/schemas/TokenRefresh'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenRefreshRequest'
+              $ref: '#/components/schemas/TokenRefresh'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenRefreshRequest'
+              $ref: '#/components/schemas/TokenRefresh'
         required: true
       responses:
         '200':
@@ -58,155 +58,210 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenRefresh'
           description: ''
-  /api/schema/:
+  /api/v1/incidents/:
     get:
-      operationId: schema_retrieve
-      description: |-
-        OpenApi3 schema for this API. Format can be selected via content negotiation.
-
-        - YAML: application/vnd.oai.openapi
-        - JSON: application/vnd.oai.openapi+json
+      operationId: v1_incidents_list
+      description: Retrieve a single active incident by ID.
+      summary: Retrieve incident
       parameters:
-      - in: query
-        name: format
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
         schema:
           type: string
-          enum:
-          - json
-          - yaml
-      - in: query
-        name: lang
+      - name: search
+        required: false
+        in: query
+        description: A search term.
         schema:
           type: string
-          enum:
-          - af
-          - ar
-          - ar-dz
-          - ast
-          - az
-          - be
-          - bg
-          - bn
-          - br
-          - bs
-          - ca
-          - ckb
-          - cs
-          - cy
-          - da
-          - de
-          - dsb
-          - el
-          - en
-          - en-au
-          - en-gb
-          - eo
-          - es
-          - es-ar
-          - es-co
-          - es-mx
-          - es-ni
-          - es-ve
-          - et
-          - eu
-          - fa
-          - fi
-          - fr
-          - fy
-          - ga
-          - gd
-          - gl
-          - he
-          - hi
-          - hr
-          - hsb
-          - ht
-          - hu
-          - hy
-          - ia
-          - id
-          - ig
-          - io
-          - is
-          - it
-          - ja
-          - ka
-          - kab
-          - kk
-          - km
-          - kn
-          - ko
-          - ky
-          - lb
-          - lt
-          - lv
-          - mk
-          - ml
-          - mn
-          - mr
-          - ms
-          - my
-          - nb
-          - ne
-          - nl
-          - nn
-          - os
-          - pa
-          - pl
-          - pt
-          - pt-br
-          - ro
-          - ru
-          - sk
-          - sl
-          - sq
-          - sr
-          - sr-latn
-          - sv
-          - sw
-          - ta
-          - te
-          - tg
-          - th
-          - tk
-          - tr
-          - tt
-          - udm
-          - ug
-          - uk
-          - ur
-          - uz
-          - vi
-          - zh-hans
-          - zh-hant
       tags:
-      - schema
+      - v1
       security:
       - jwtAuth: []
-      - {}
       responses:
         '200':
           content:
-            application/vnd.oai.openapi:
-              schema:
-                type: object
-                additionalProperties: {}
-            application/yaml:
-              schema:
-                type: object
-                additionalProperties: {}
-            application/vnd.oai.openapi+json:
-              schema:
-                type: object
-                additionalProperties: {}
             application/json:
               schema:
-                type: object
-                additionalProperties: {}
-          description: ''
-  /api/service-requests/:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IncidentResponse'
+          description: Incident retrieved successfully.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '404':
+          description: Incident not found.
+    post:
+      operationId: v1_incidents_create
+      description: Create a new incident. The authenticated user is automatically
+        set as the creator.
+      summary: Create incident
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Incident'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Incident'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Incident'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentResponse'
+          description: Incident created successfully.
+        '400':
+          description: Invalid incident data.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '429':
+          description: Request rate limit exceeded.
+  /api/v1/incidents/{id}/:
     get:
-      operationId: service_requests_list
+      operationId: v1_incidents_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+          description: ''
+    put:
+      operationId: v1_incidents_update
+      description: Update an existing incident.
+      summary: Update incident
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Incident'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Incident'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Incident'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentResponse'
+          description: Incident updated successfully.
+        '400':
+          description: Invalid incident data.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '404':
+          description: Incident not found.
+    patch:
+      operationId: v1_incidents_partial_update
+      description: Partially update an existing incident.
+      summary: Partially update incident
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedIncident'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedIncident'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedIncident'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentResponse'
+          description: Incident updated successfully.
+        '400':
+          description: Invalid incident data.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '404':
+          description: Incident not found.
+    delete:
+      operationId: v1_incidents_destroy
+      description: Soft delete an incident. The incident is marked as deleted and
+        removed from normal API listings.
+      summary: Delete incident
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: Incident deleted successfully.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '404':
+          description: Incident not found.
+  /api/v1/service-requests/:
+    get:
+      operationId: v1_service_requests_list
+      description: Retrieve service requests with optional filtering, searching, and
+        ordering.
+      summary: List service requests
       parameters:
       - in: query
         name: assigned_to
@@ -277,7 +332,7 @@ paths:
           * `FULFILLED` - Fulfilled
           * `CLOSED` - Closed
       tags:
-      - service-requests
+      - v1
       security:
       - jwtAuth: []
       responses:
@@ -286,22 +341,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedServiceRequestList'
-          description: ''
+          description: Service requests retrieved successfully.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
     post:
-      operationId: service_requests_create
+      operationId: v1_service_requests_create
+      description: Create a new service request. The authenticated user is automatically
+        assigned as the requester.
+      summary: Create service request
       tags:
-      - service-requests
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
         required: true
       security:
       - jwtAuth: []
@@ -311,10 +373,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceRequest'
-          description: ''
-  /api/service-requests/{id}/:
+          description: Service request created successfully.
+        '400':
+          description: Invalid service request data.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+  /api/v1/service-requests/{id}/:
     get:
-      operationId: service_requests_retrieve
+      operationId: v1_service_requests_retrieve
+      description: Retrieve a single service request by ID.
+      summary: Retrieve service request
       parameters:
       - in: path
         name: id
@@ -322,7 +392,7 @@ paths:
           type: integer
         required: true
       tags:
-      - service-requests
+      - v1
       security:
       - jwtAuth: []
       responses:
@@ -331,9 +401,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceRequest'
-          description: ''
+          description: Service request retrieved successfully.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '404':
+          description: Service request not found.
     put:
-      operationId: service_requests_update
+      operationId: v1_service_requests_update
+      description: Replace an existing service request.
+      summary: Update service request
       parameters:
       - in: path
         name: id
@@ -341,18 +419,18 @@ paths:
           type: integer
         required: true
       tags:
-      - service-requests
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
         required: true
       security:
       - jwtAuth: []
@@ -362,9 +440,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceRequest'
-          description: ''
+          description: Service request updated successfully.
+        '400':
+          description: Invalid service request data.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '404':
+          description: Service request not found.
     patch:
-      operationId: service_requests_partial_update
+      operationId: v1_service_requests_partial_update
+      description: Partially update an existing service request.
+      summary: Partially update service request
       parameters:
       - in: path
         name: id
@@ -372,18 +460,18 @@ paths:
           type: integer
         required: true
       tags:
-      - service-requests
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedServiceRequestRequest'
+              $ref: '#/components/schemas/PatchedServiceRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedServiceRequestRequest'
+              $ref: '#/components/schemas/PatchedServiceRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedServiceRequestRequest'
+              $ref: '#/components/schemas/PatchedServiceRequest'
       security:
       - jwtAuth: []
       responses:
@@ -392,9 +480,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceRequest'
-          description: ''
+          description: Service request updated successfully.
+        '400':
+          description: Invalid service request data.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '404':
+          description: Service request not found.
     delete:
-      operationId: service_requests_destroy
+      operationId: v1_service_requests_destroy
+      description: Delete an existing service request.
+      summary: Delete service request
       parameters:
       - in: path
         name: id
@@ -402,15 +500,24 @@ paths:
           type: integer
         required: true
       tags:
-      - service-requests
+      - v1
       security:
       - jwtAuth: []
       responses:
         '204':
-          description: No response body
-  /api/service-requests/{id}/assign/:
+          description: Service request deleted successfully.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Permission denied.
+        '404':
+          description: Service request not found.
+  /api/v1/service-requests/{id}/assign/:
     put:
-      operationId: service_requests_assign_update
+      operationId: v1_service_requests_assign_update
+      description: Assign a service request to a user. Only Admin and Team Lead users
+        are permitted to perform this operation.
+      summary: Assign service request
       parameters:
       - in: path
         name: id
@@ -418,18 +525,18 @@ paths:
           type: integer
         required: true
       tags:
-      - service-requests
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ServiceRequestRequest'
+              $ref: '#/components/schemas/ServiceRequest'
         required: true
       security:
       - jwtAuth: []
@@ -439,9 +546,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceRequest'
-          description: ''
+          description: Service request assigned successfully.
+        '400':
+          description: assigned_to is required.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Only Admin or Team Lead can assign requests.
+        '404':
+          description: Service request not found.
     patch:
-      operationId: service_requests_assign_partial_update
+      operationId: v1_service_requests_assign_partial_update
+      description: Assign a service request to a user. Only Admin and Team Lead users
+        are permitted to perform this operation.
+      summary: Partially assign service request
       parameters:
       - in: path
         name: id
@@ -449,18 +567,18 @@ paths:
           type: integer
         required: true
       tags:
-      - service-requests
+      - v1
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedServiceRequestRequest'
+              $ref: '#/components/schemas/PatchedServiceRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedServiceRequestRequest'
+              $ref: '#/components/schemas/PatchedServiceRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedServiceRequestRequest'
+              $ref: '#/components/schemas/PatchedServiceRequest'
       security:
       - jwtAuth: []
       responses:
@@ -469,9 +587,92 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceRequest'
-          description: ''
+          description: Service request assigned successfully.
+        '400':
+          description: assigned_to is required.
+        '401':
+          description: Authentication credentials were not provided.
+        '403':
+          description: Only Admin or Team Lead can assign requests.
+        '404':
+          description: Service request not found.
 components:
   schemas:
+    Incident:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        incident_number:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        status:
+          $ref: '#/components/schemas/IncidentStatusEnum'
+        application:
+          type: string
+          maxLength: 100
+        assigned_to:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - application
+      - created_at
+      - description
+      - id
+      - incident_number
+      - resolved_at
+      - title
+    IncidentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        status_code:
+          type: integer
+          default: 200
+        message:
+          type: string
+          default: Incidents retrieved successfully.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incident'
+      required:
+      - data
+    IncidentStatusEnum:
+      enum:
+      - OPEN
+      - ASSIGNED
+      - IN_PROGRESS
+      - PENDING
+      - RESOLVED
+      - CLOSED
+      type: string
+      description: |-
+        * `OPEN` - Open
+        * `ASSIGNED` - Assigned
+        * `IN_PROGRESS` - In Progress
+        * `PENDING` - Pending
+        * `RESOLVED` - Resolved
+        * `CLOSED` - Closed
     PaginatedServiceRequestList:
       type: object
       required:
@@ -495,34 +696,98 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceRequest'
-    PatchedServiceRequestRequest:
+    PatchedIncident:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
+        incident_number:
+          type: string
+          readOnly: true
         title:
           type: string
-          minLength: 1
           maxLength: 200
         description:
           type: string
-          minLength: 1
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        status:
+          $ref: '#/components/schemas/IncidentStatusEnum'
+        application:
+          type: string
+          maxLength: 100
+        assigned_to:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        resolved_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+    PatchedServiceRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        request_number:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
         service:
           type: integer
           nullable: true
         category:
           type: string
-          minLength: 1
           maxLength: 100
         subcategory:
           type: string
-          minLength: 1
           maxLength: 100
         priority:
           $ref: '#/components/schemas/PriorityEnum'
         status:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/ServiceRequestStatusEnum'
+        requester:
+          type: integer
+          readOnly: true
+          nullable: true
+        requester_name:
+          type: string
+          readOnly: true
         assigned_to:
           type: integer
           nullable: true
+        assigned_to_name:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        sla_due_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        sla_status:
+          type: string
+          readOnly: true
+        approval_status:
+          type: string
+          readOnly: true
     PriorityEnum:
       enum:
       - P1
@@ -561,7 +826,7 @@ components:
         priority:
           $ref: '#/components/schemas/PriorityEnum'
         status:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/ServiceRequestStatusEnum'
         requester:
           type: integer
           readOnly: true
@@ -609,40 +874,7 @@ components:
       - subcategory
       - title
       - updated_at
-    ServiceRequestRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-        description:
-          type: string
-          minLength: 1
-        service:
-          type: integer
-          nullable: true
-        category:
-          type: string
-          minLength: 1
-          maxLength: 100
-        subcategory:
-          type: string
-          minLength: 1
-          maxLength: 100
-        priority:
-          $ref: '#/components/schemas/PriorityEnum'
-        status:
-          $ref: '#/components/schemas/StatusEnum'
-        assigned_to:
-          type: integer
-          nullable: true
-      required:
-      - category
-      - description
-      - subcategory
-      - title
-    StatusEnum:
+    ServiceRequestStatusEnum:
       enum:
       - DRAFT
       - SUBMITTED
@@ -667,6 +899,12 @@ components:
     TokenObtainPair:
       type: object
       properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
         access:
           type: string
           readOnly: true
@@ -675,20 +913,8 @@ components:
           readOnly: true
       required:
       - access
-      - refresh
-    TokenObtainPairRequest:
-      type: object
-      properties:
-        username:
-          type: string
-          writeOnly: true
-          minLength: 1
-        password:
-          type: string
-          writeOnly: true
-          minLength: 1
-      required:
       - password
+      - refresh
       - username
     TokenRefresh:
       type: object
@@ -696,16 +922,11 @@ components:
         access:
           type: string
           readOnly: true
-      required:
-      - access
-    TokenRefreshRequest:
-      type: object
-      properties:
         refresh:
           type: string
           writeOnly: true
-          minLength: 1
       required:
+      - access
       - refresh
   securitySchemes:
     jwtAuth:

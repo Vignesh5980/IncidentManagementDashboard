@@ -41,11 +41,10 @@ urlpatterns = [
 
     # APIs
     path("api/v1/incidents/", include("incidents.api.urls")),
-    path("api/v1/service_request/", include("service_requests.api.urls")),
 
     # Service Request API
     path(
-        "api/service-requests/",
+        "api/v1/service-requests/",
         include("service_requests.api.urls")
     ),
 
@@ -58,11 +57,11 @@ urlpatterns = [
     ),
 
     # Swagger UI
-    path(
-        "api/v1/schema/",
-        SpectacularAPIView.as_view(),
-        name="schema"
-    ),
+    # path(
+    #     "api/v1/schema/",
+    #     SpectacularAPIView.as_view(),
+    #     name="schema"
+    # ),
 
     path(
         "api/v1/docs/",
